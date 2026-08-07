@@ -1,0 +1,6 @@
+{
+  "name": "QXT Funded",
+  "description": "Prove Your Edge. Get Funded.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

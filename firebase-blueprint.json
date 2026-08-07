@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profiles",
+      "description": "User profile data synced on authentication",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "country": { "type": "string" },
+        "phone": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "registrationDate": { "type": "string" },
+        "lastLogin": { "type": "string" },
+        "authProvider": { "type": "string" },
+        "walletBalance": { "type": "number" }
+      },
+      "required": ["uid", "email"]
+    },
+    "orders": {
+      "title": "Account Orders",
+      "description": "Prop trading account purchase orders",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "userPhone": { "type": "string" },
+        "userCountry": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "postal": { "type": "string" },
+        "broker": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "planName": { "type": "string" },
+        "type": { "type": "string" },
+        "size": { "type": "number" },
+        "price": { "type": "number" },
+        "discount": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "accountDetails": { "type": "object" }
+      },
+      "required": ["id", "userId", "status"]
+    },
+    "supportTickets": {
+      "title": "Support Tickets",
+      "description": "Customer support ticket and conversation threads",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ticketNumber": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "subject": { "type": "string" },
+        "category": { "type": "string" },
+        "priority": { "type": "string" },
+        "message": { "type": "string" },
+        "attachmentUrl": { "type": "string" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" },
+        "messages": { "type": "array" }
+      },
+      "required": ["id", "userId", "subject"]
+    },
+    "notifications": {
+      "title": "User Notifications",
+      "description": "In-app alerts for orders and support status changes",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "title"]
+    },
+    "activityLogs": {
+      "title": "Activity Logs",
+      "description": "Audit trail of account actions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "type"]
+    },
+    "counters": {
+      "title": "Sequential Counters",
+      "description": "Counter sequence numbers for formatted IDs",
+      "type": "object",
+      "properties": {
+        "seq": { "type": "number" }
+      }
+    }
+  }
+}
