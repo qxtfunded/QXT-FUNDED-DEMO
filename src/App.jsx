@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './lib/AuthContext'
+import { initLiveChat } from './lib/livechat'
 
 import SiteLayout from './components/layout/SiteLayout'
 import DashboardLayout from './components/layout/DashboardLayout'
@@ -40,6 +42,10 @@ import ServerError from './pages/ServerError'
 import Maintenance from './pages/Maintenance'
 
 export default function App() {
+  useEffect(() => {
+    initLiveChat()
+  }, [])
+
   return (
     <AuthProvider>
       <Routes>

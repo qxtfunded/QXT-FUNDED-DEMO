@@ -41,7 +41,7 @@ export function initLiveChat() {
 
   window.LiveChatWidget.init()
 
-  // Always keep the small floating widget button hidden when minimized or ready
+  // Hide default floating widget by default so it only opens when clicking "Live Chat" in Support Center
   window.LiveChatWidget.on('ready', () => {
     try {
       window.LiveChatWidget.call('hide')
@@ -49,40 +49,21 @@ export function initLiveChat() {
       console.error(e)
     }
   })
-
-  window.LiveChatWidget.on('visibility_changed', (data) => {
-    if (data && (data.visibility === 'minimized' || data.visibility === 'hidden')) {
-      try {
-        window.LiveChatWidget.call('hide')
-      } catch (e) {
-        console.error(e)
-      }
-    }
-  })
 }
 
 export function openLiveChat() {
   initLiveChat()
 
-  // Try maximizing embedded widget if ready
   if (window.LiveChatWidget && typeof window.LiveChatWidget.call === 'function') {
     try {
       window.LiveChatWidget.call('show')
       window.LiveChatWidget.call('maximize')
+      return
     } catch (err) {
-      console.warn('LiveChat widget maximize call failed:', err)
+      console.warn('LiveChat maximize call failed, falling back to direct URL:', err)
     }
   }
 
-  // Also open direct LiveChat chat window as popup for immediate response
-  const width = 480
-  const height = 680
-  const left = Math.max(0, (window.innerWidth - width) / 2)
-  const top = Math.max(0, (window.innerHeight - height) / 2)
-
-  window.open(
-    'https://www.livechat.com/chat-with/19886614/',
-    'QXT_LiveChat',
-    `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=yes`
-  )
+  // Fallback to official LiveChat web window
+  window.open('https://www.livechat.com/chat-with/19886614/', '_blank', 'noopener,noreferrer')
 }
