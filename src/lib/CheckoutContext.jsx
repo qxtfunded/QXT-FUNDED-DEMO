@@ -10,7 +10,7 @@ export const BROKERS = [
     logoUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png',
     desc: 'Top-rated broker with flexible options trade modes and premium liquidity levels.',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
           src="https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png"
           alt="Pocket Option"
@@ -27,7 +27,7 @@ export const BROKERS = [
     logoUrl: 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png',
     desc: 'Highly customizable UI and perfect modern trading interface for active clients.',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
           src="https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png"
           alt="Quotex"
@@ -44,7 +44,7 @@ export const BROKERS = [
     logoUrl: 'https://i.ibb.co/kCCmxZ7/binomo-logo.png',
     desc: 'Robust and steady execution speed, excellent for scalping models and rapid entries.',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
           src="https://i.ibb.co/kCCmxZ7/binomo-logo.png"
           alt="Binomo"
@@ -61,7 +61,7 @@ export const BROKERS = [
     logoUrl: 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png',
     desc: 'Multi-market broker with deep indicators selection and lightning fast fills.',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
           src="https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png"
           alt="Olymp Trade"
@@ -75,14 +75,14 @@ export const BROKERS = [
   {
     id: 'tradowix',
     name: 'Tradowix',
-    logoUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png',
+    logoUrl: 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg',
     desc: 'Premium trading infrastructure with institutional grade speed.',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png"
+          src="https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg"
           alt="Tradowix"
-          className="h-full w-full object-contain"
+          className="h-full w-full object-contain rounded-lg"
           loading="eager"
           referrerPolicy="no-referrer"
         />
@@ -96,14 +96,14 @@ export const CRYPTO_METHODS = [
     id: 'USDT ERC20',
     name: 'USDT ERC20',
     network: 'Ethereum Network (ERC-20)',
-    address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+    address: '0xcB6523ac0272De5FcbD44571A8ACa5e5215CC5Cf',
     symbol: 'USDT',
     badge: 'ERC20',
-    logoUrl: 'https://assets.coingecko.com/coins/images/325/large/Tether.png',
+    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://assets.coingecko.com/coins/images/325/large/Tether.png"
+          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png"
           alt="USDT ERC20"
           className="h-full w-full object-contain"
           loading="eager"
@@ -116,14 +116,14 @@ export const CRYPTO_METHODS = [
     id: 'USDT TRC20',
     name: 'USDT TRC20',
     network: 'TRON Network (TRC-20)',
-    address: 'TQx1zP8m9K2vW4jL7n3R8yU1a5B6c7D8e9',
+    address: 'TQY7PoJ6FFJj9P2RFq3GeAu3ndsL2qVbF6',
     symbol: 'USDT',
     badge: 'TRC20',
-    logoUrl: 'https://assets.coingecko.com/coins/images/325/large/Tether.png',
+    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://assets.coingecko.com/coins/images/325/large/Tether.png"
+          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png"
           alt="USDT TRC20"
           className="h-full w-full object-contain"
           loading="eager"
@@ -136,14 +136,14 @@ export const CRYPTO_METHODS = [
     id: 'USDT BEP20',
     name: 'USDT BEP20',
     network: 'BNB Smart Chain (BEP-20)',
-    address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+    address: '0xcB6523ac0272De5FcbD44571A8ACa5e5215CC5Cf',
     symbol: 'USDT',
     badge: 'BEP20',
-    logoUrl: 'https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png',
+    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png"
+          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png"
           alt="USDT BEP20"
           className="h-full w-full object-contain"
           loading="eager"
@@ -156,14 +156,14 @@ export const CRYPTO_METHODS = [
     id: 'Bitcoin',
     name: 'Bitcoin',
     network: 'Bitcoin Mainnet',
-    address: 'bc1qxy2kg81e0012v8190012v8190012v8190012v8',
+    address: 'bc1qpmms07ds8sp8ddqa06dzy5t3s37p0m6frq0qfw',
     symbol: 'BTC',
     badge: 'BTC',
-    logoUrl: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
+    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://assets.coingecko.com/coins/images/1/large/bitcoin.png"
+          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png"
           alt="Bitcoin"
           className="h-full w-full object-contain"
           loading="eager"
@@ -176,14 +176,14 @@ export const CRYPTO_METHODS = [
     id: 'Ethereum',
     name: 'Ethereum',
     network: 'Ethereum Mainnet',
-    address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+    address: '0xcB6523ac0272De5FcbD44571A8ACa5e5215CC5Cf',
     symbol: 'ETH',
     badge: 'ETH',
-    logoUrl: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
+    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png',
     logo: (
-      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10">
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://assets.coingecko.com/coins/images/279/large/ethereum.png"
+          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png"
           alt="Ethereum"
           className="h-full w-full object-contain"
           loading="eager"

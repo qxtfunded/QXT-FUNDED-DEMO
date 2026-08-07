@@ -177,8 +177,14 @@ export default function Home() {
         <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {brokers.map((b) => (
             <Card key={b.name} className="flex flex-col items-center gap-3 p-6 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-ink-700 to-ink-800 font-display text-lg font-bold text-gold-400">
-                {b.name.charAt(0)}
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-ink-800 p-2 shadow-md border border-white/10 overflow-hidden">
+                <img
+                  src={b.logoUrl}
+                  alt={b.name}
+                  className="h-full w-full object-contain"
+                  loading="eager"
+                  referrerPolicy="no-referrer"
+                />
               </div>
               <p className="text-sm font-semibold text-paper-100">{b.name}</p>
               <Badge tone="mint" className="text-[10px]">
