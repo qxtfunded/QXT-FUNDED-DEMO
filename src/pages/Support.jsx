@@ -1,7 +1,8 @@
-import { LifeBuoy, MessageCircle, Mail, ArrowRight } from 'lucide-react'
+import { LifeBuoy, MessageCircle, Mail, ArrowRight, MessageSquareCode } from 'lucide-react'
 import { Eyebrow, Section, Card } from '../components/ui/Primitives'
 import Button from '../components/ui/Button'
 import { faqs } from '../data/content'
+import { openLiveChat } from '../lib/livechat'
 
 export default function Support() {
   return (
@@ -12,45 +13,66 @@ export default function Support() {
           Support Center
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-paper-400">
-          Search the FAQ, browse your tickets, or reach out directly — our team responds 24/7.
+          Search the FAQ, start a live chat session, browse your tickets, or reach out directly — our team responds 24/7.
         </p>
       </Section>
 
       <Section className="pt-0">
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="relative overflow-hidden border-gold-500/30 bg-gradient-to-b from-gold-500/10 to-transparent p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gold-500/20 text-gold-400">
+                <MessageSquareCode size={20} />
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-mint-500/10 px-2.5 py-0.5 text-xs font-medium text-mint-400 border border-mint-500/20">
+                <span className="h-1.5 w-1.5 rounded-full bg-mint-400 animate-pulse" />
+                Online
+              </span>
+            </div>
+            <h3 className="mt-5 font-display text-lg font-semibold">Live Chat</h3>
+            <p className="mt-2 text-sm text-paper-400">
+              Connect instantly with our support team in real-time 24/7.
+            </p>
+            <Button onClick={openLiveChat} variant="primary" size="sm" className="mt-5 w-full">
+              Start Live Chat <ArrowRight size={14} />
+            </Button>
+          </Card>
+
           <Card className="p-6">
             <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gold-500/10 text-gold-400">
               <LifeBuoy size={20} />
             </div>
             <h3 className="mt-5 font-display text-lg font-semibold">Open a Ticket</h3>
             <p className="mt-2 text-sm text-paper-400">
-              Sign in and create a support ticket for account, billing, or technical issues.
+              Create a support ticket for account, billing, or technical issues.
             </p>
-            <Button to="/login" variant="outline" size="sm" className="mt-5">
+            <Button to="/login" variant="outline" size="sm" className="mt-5 w-full">
               Sign in to continue <ArrowRight size={14} />
             </Button>
           </Card>
+
           <Card className="p-6">
             <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-mint-500/10 text-mint-400">
               <MessageCircle size={20} />
             </div>
             <h3 className="mt-5 font-display text-lg font-semibold">Browse the FAQ</h3>
             <p className="mt-2 text-sm text-paper-400">
-              Most questions about accounts, rules, and payouts are answered instantly.
+              Most questions about accounts, rules, and payouts are answered.
             </p>
-            <Button to="/faq" variant="outline" size="sm" className="mt-5">
+            <Button to="/faq" variant="outline" size="sm" className="mt-5 w-full">
               View FAQ <ArrowRight size={14} />
             </Button>
           </Card>
+
           <Card className="p-6">
             <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/5 text-paper-200">
               <Mail size={20} />
             </div>
             <h3 className="mt-5 font-display text-lg font-semibold">Email Us</h3>
             <p className="mt-2 text-sm text-paper-400">
-              For anything else, reach our team directly and we'll follow up within a day.
+              Reach our support team directly via email anytime.
             </p>
-            <Button href="mailto:support@qxtfunded.com" variant="outline" size="sm" className="mt-5">
+            <Button href="mailto:support@qxtfunded.com" variant="outline" size="sm" className="mt-5 w-full">
               support@qxtfunded.com
             </Button>
           </Card>

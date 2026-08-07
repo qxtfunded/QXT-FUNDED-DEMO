@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Wallet2, TrendingUp, ListOrdered, LifeBuoy, ArrowUpRight, ArrowRight } from 'lucide-react'
+import { TrendingUp, ListOrdered, LifeBuoy, ArrowUpRight, ArrowRight } from 'lucide-react'
 import { Card } from '../../components/ui/Primitives'
 import Button from '../../components/ui/Button'
 import StatusBadge from '../../components/sections/StatusBadge'
@@ -40,7 +40,6 @@ export default function Overview() {
   ).length
 
   const statCards = [
-    { label: 'Wallet Balance', value: `$${(userData?.walletBalance || 0).toFixed(2)}`, icon: Wallet2, tone: 'gold' },
     { label: 'Active Accounts', value: activeAccountsCount.toString(), icon: TrendingUp, tone: 'mint' },
     { label: 'Total Orders', value: userOrders.length.toString(), icon: ListOrdered, tone: 'neutral' },
     { label: 'Open Support Tickets', value: openTicketsCount.toString(), icon: LifeBuoy, tone: 'warning' },
@@ -56,7 +55,7 @@ export default function Overview() {
         <p className="mt-1 text-sm text-paper-400">Here's what's happening with your accounts.</p>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-5 sm:grid-cols-3">
         {statCards.map((s) => (
           <Card key={s.label} className="p-5" hover={false}>
             <div className="flex items-center justify-between">

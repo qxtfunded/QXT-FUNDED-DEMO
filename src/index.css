@@ -97,3 +97,9 @@ select:focus-visible,
   font-family: 'JetBrains Mono', monospace;
   font-variant-numeric: tabular-nums;
 }
+
+/* Hide floating LiveChat widget button */
+#chat-widget-container iframe[title*="LiveChat widget"],
+#chat-widget-container iframe[data-test-id="chat-widget-launcher"] {
+  display: none !important;
+}
