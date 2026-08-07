@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase/app'
+import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
-import { initializeFirestore } from 'firebase/firestore'
+import { initializeFirestore, getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
@@ -13,12 +13,20 @@ const firebaseConfig = {
   measurementId: "G-F5VDSP9K2F"
 }
 
-const app = initializeApp(firebaseConfig)
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
-export const db = initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true,
-})
+
+let firestoreDb
+try {
+  firestoreDb = initializeFirestore(app, {
+    experimentalAutoDetectLongPolling: true,
+  })
+} catch (e) {
+  firestoreDb = getFirestore(app)
+}
+
+export const db = firestoreDb
 export const storage = getStorage(app)
 export const googleProvider = new GoogleAuthProvider()
 
