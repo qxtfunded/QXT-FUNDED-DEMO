@@ -16,13 +16,38 @@ export default function Step2Payment() {
     setCouponApplied,
   } = useCheckout()
 
+  const VALID_PROMO_CODES = ['QXT10', 'QXT2026', 'SAVE10', 'OFF10', 'PROMO10', 'DISCOUNT10', 'WELCOME10', 'QXTFUNDED']
+
   const [showPromoInput, setShowPromoInput] = useState(false)
   const [error, setError] = useState('')
+  const [promoMessage, setPromoMessage] = useState('')
+  const [promoError, setPromoError] = useState('')
 
   const applyCoupon = () => {
-    if (coupon.trim()) {
-      setCouponApplied(true)
+    const code = coupon.trim().toUpperCase()
+    if (!code) {
+      setPromoError('Please enter a promo code.')
+      setPromoMessage('')
+      setCouponApplied(false)
+      return
     }
+
+    if (VALID_PROMO_CODES.includes(code)) {
+      setCouponApplied(true)
+      setPromoError('')
+      setPromoMessage(`Coupon "${code}" applied! 10% discount applied to your total.`)
+    } else {
+      setCouponApplied(false)
+      setPromoMessage('')
+      setPromoError('Invalid promo code. Please enter a valid coupon code.')
+    }
+  }
+
+  const removeCoupon = () => {
+    setCoupon('')
+    setCouponApplied(false)
+    setPromoError('')
+    setPromoMessage('')
   }
 
   const handleNext = (e) => {
@@ -64,21 +89,41 @@ export default function Step2Payment() {
                 <div className="flex gap-2">
                   <input
                     value={coupon}
-                    onChange={(e) => setCoupon(e.target.value)}
+                    onChange={(e) => {
+                      setCoupon(e.target.value)
+                      if (couponApplied) setCouponApplied(false)
+                      if (promoError) setPromoError('')
+                      if (promoMessage) setPromoMessage('')
+                    }}
                     placeholder="Enter coupon code"
-                    className="flex-1 rounded-xl border border-white/15 bg-ink-950 px-3.5 py-2.5 text-sm placeholder:text-paper-500 focus:border-amber-400 focus:outline-none"
+                    className="flex-1 rounded-xl border border-white/15 bg-ink-950 px-3.5 py-2.5 text-sm uppercase placeholder:text-paper-500 placeholder:normal-case focus:border-amber-400 focus:outline-none"
                   />
-                  <button
-                    type="button"
-                    onClick={applyCoupon}
-                    className="rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-ink-950 hover:bg-amber-400 transition-all"
-                  >
-                    Apply
-                  </button>
+                  {couponApplied ? (
+                    <button
+                      type="button"
+                      onClick={removeCoupon}
+                      className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/20 transition-all"
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={applyCoupon}
+                      className="rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-ink-950 hover:bg-amber-400 transition-all"
+                    >
+                      Apply
+                    </button>
+                  )}
                 </div>
                 {couponApplied && (
                   <p className="text-xs text-mint-400 font-semibold flex items-center gap-1 pt-1">
-                    <Check size={14} /> Coupon applied! 10% discount applied to your total.
+                    <Check size={14} /> {promoMessage || 'Coupon applied! 10% discount applied to your total.'}
+                  </p>
+                )}
+                {promoError && (
+                  <p className="text-xs text-red-400 font-semibold flex items-center gap-1 pt-1">
+                    <AlertCircle size={14} /> {promoError}
                   </p>
                 )}
               </div>
