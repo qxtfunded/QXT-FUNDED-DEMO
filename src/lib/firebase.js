@@ -63,3 +63,50 @@ export function handleFirestoreError(error, operationType, path) {
   console.error('Firestore Error: ', JSON.stringify(errInfo))
   throw new Error(JSON.stringify(errInfo))
 }
+
+export function formatAuthErrorMessage(err) {
+  if (!err) return 'Authentication failed. Please check your details and try again.'
+
+  if (typeof err === 'string') {
+    if (err.includes('blocked') || err.includes('disabled') || err.includes('Incorrect') || err.includes('No account')) {
+      return err
+    }
+    return err
+  }
+
+  const code = err.code || ''
+  const message = err.message || ''
+
+  if (message.toLowerCase().includes('blocked') || message.toLowerCase().includes('disabled') || message.toLowerCase().includes('suspended')) {
+    return 'Your account has been suspended or blocked. Please contact QXT Support.'
+  }
+
+  switch (code) {
+    case 'auth/user-not-found':
+      return 'No account found with this email address. Please sign up first.'
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+    case 'auth/invalid-login-credentials':
+      return 'Incorrect password. Please check your password and try again.'
+    case 'auth/user-disabled':
+      return 'Your account has been disabled. Please contact QXT Support.'
+    case 'auth/too-many-requests':
+      return 'Too many failed login attempts. Please wait a few minutes before trying again.'
+    case 'auth/email-already-in-use':
+      return 'An account with this email address already exists. Please sign in.'
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.'
+    case 'auth/weak-password':
+      return 'Password is too weak. Please use at least 6 characters.'
+    case 'auth/network-request-failed':
+      return 'Network connection error. Please check your internet connection.'
+    case 'auth/popup-closed-by-user':
+    case 'auth/cancelled-popup-request':
+      return 'Sign-in window was closed before completing.'
+    default:
+      if (message.includes('Firebase') || message.includes('auth/') || message.includes('credential')) {
+        return 'Incorrect email or password. Please verify your login details.'
+      }
+      return message || 'Authentication failed. Please check your credentials and try again.'
+  }
+}

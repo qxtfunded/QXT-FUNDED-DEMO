@@ -5,6 +5,7 @@ import AuthShell from '../../components/layout/AuthShell'
 import { Label, Input, Select, Checkbox } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
+import { formatAuthErrorMessage } from '../../lib/firebase'
 
 const countries = [
   'United States', 'United Kingdom', 'United Arab Emirates', 'Pakistan', 'India',
@@ -38,7 +39,7 @@ export default function Signup() {
       navigate(redirectTarget)
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Failed to create account. Email may already be in use.')
+      setError(formatAuthErrorMessage(err))
     } finally {
       setSubmitting(false)
     }

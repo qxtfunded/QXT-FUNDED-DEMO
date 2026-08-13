@@ -5,6 +5,7 @@ import AuthShell from '../../components/layout/AuthShell'
 import { Label, Input } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
+import { formatAuthErrorMessage } from '../../lib/firebase'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -22,7 +23,7 @@ export default function ForgotPassword() {
       setSent(true)
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Failed to send reset email.')
+      setError(formatAuthErrorMessage(err))
     } finally {
       setSubmitting(false)
     }

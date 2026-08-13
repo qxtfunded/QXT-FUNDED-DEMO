@@ -97,7 +97,20 @@ export function AuthProvider({ children }) {
     setLoading(true)
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password)
-      await syncUserData(cred.user)
+      const data = await syncUserData(cred.user)
+      if (
+        data &&
+        (data.status === 'blocked' ||
+          data.status === 'disabled' ||
+          data.isBlocked === true ||
+          data.accountStatus === 'Blocked' ||
+          data.accountStatus === 'Disabled')
+      ) {
+        await firebaseSignOut(auth)
+        setUser(null)
+        setUserData(null)
+        throw new Error('Your account has been suspended or blocked. Please contact QXT Support.')
+      }
       return cred.user
     } catch (err) {
       throw err

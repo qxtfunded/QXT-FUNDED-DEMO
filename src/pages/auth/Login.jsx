@@ -5,6 +5,7 @@ import AuthShell from '../../components/layout/AuthShell'
 import { Label, Input, Checkbox } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
+import { formatAuthErrorMessage } from '../../lib/firebase'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -26,7 +27,7 @@ export default function Login() {
       navigate(redirectTarget)
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Failed to sign in. Please check your credentials.')
+      setError(formatAuthErrorMessage(err))
     } finally {
       setSubmitting(false)
     }

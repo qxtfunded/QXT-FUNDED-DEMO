@@ -137,6 +137,42 @@ export async function updateOrderStatus(orderId, newStatus, customDetails = {}) 
 }
 
 /**
+ * AUTO-REJECT PENDING ORDERS AFTER 2 HOURS IF NOT APPROVED OR STATUS NOT CHANGED
+ */
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000
+
+export function checkAndProcessAutoRejections(orders) {
+  if (!Array.isArray(orders)) return orders
+
+  const now = Date.now()
+  return orders.map((order) => {
+    if (!order) return order
+
+    const statusLower = (order.status || '').toLowerCase()
+    // Check if order is still in Pending state
+    if (statusLower === 'pending' || statusLower === 'pending activation') {
+      const createdTime = order.createdAt ? new Date(order.createdAt).getTime() : 0
+      if (createdTime > 0 && (now - createdTime >= TWO_HOURS_MS)) {
+        const updatedOrder = {
+          ...order,
+          status: 'Rejected',
+          accountDetails: {
+            ...(order.accountDetails || {}),
+            accountStatus: 'Rejected',
+          },
+        }
+        // Update Firestore asynchronously if id exists
+        if (order.id) {
+          updateOrderStatus(order.id, 'Rejected', { accountStatus: 'Rejected' }).catch(() => {})
+        }
+        return updatedOrder
+      }
+    }
+    return order
+  })
+}
+
+/**
  * SUBSCRIBE TO USER ORDERS
  */
 export function subscribeUserOrders(userId, onUpdate) {
@@ -149,12 +185,14 @@ export function subscribeUserOrders(userId, onUpdate) {
   return onSnapshot(
     q,
     (snapshot) => {
-      const orders = snapshot.docs.map((doc) => ({
+      let orders = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }))
       // Sort in memory by createdAt descending
       orders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+      // Auto-reject any pending orders older than 2 hours
+      orders = checkAndProcessAutoRejections(orders)
       onUpdate(orders)
     },
     (err) => {
@@ -174,7 +212,9 @@ export function subscribeOrderDetail(orderId, onUpdate) {
     ref,
     (snapshot) => {
       if (snapshot.exists()) {
-        onUpdate({ id: snapshot.id, ...snapshot.data() })
+        const docData = { id: snapshot.id, ...snapshot.data() }
+        const processed = checkAndProcessAutoRejections([docData])
+        onUpdate(processed[0])
       } else {
         onUpdate(null)
       }
