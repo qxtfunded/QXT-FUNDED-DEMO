@@ -64,6 +64,33 @@ export function handleFirestoreError(error, operationType, path) {
   throw new Error(JSON.stringify(errInfo))
 }
 
+export function validateLegalEmail(email) {
+  if (!email || typeof email !== 'string') {
+    return 'Please enter a valid email address.'
+  }
+
+  const normalized = email.trim().toLowerCase()
+  const prohibitedKeywords = [
+    'qxtfunded',
+    'fundedaccount',
+    'quotexfunded',
+    'qxt-funded',
+    'funded-account',
+    'quotex-funded',
+    'qxt_funded',
+    'funded_account',
+    'quotex_funded',
+  ]
+
+  for (const keyword of prohibitedKeywords) {
+    if (normalized.includes(keyword)) {
+      return `Invalid email address. Prohibited terms (${keyword}) cannot be used in email addresses. Please use your authentic, legal personal email.`
+    }
+  }
+
+  return null
+}
+
 export function formatAuthErrorMessage(err) {
   if (!err) return 'Authentication failed. Please check your details and try again.'
 

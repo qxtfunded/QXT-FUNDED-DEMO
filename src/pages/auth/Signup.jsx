@@ -5,7 +5,7 @@ import AuthShell from '../../components/layout/AuthShell'
 import { Label, Input, Select, Checkbox } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
-import { formatAuthErrorMessage } from '../../lib/firebase'
+import { formatAuthErrorMessage, validateLegalEmail } from '../../lib/firebase'
 
 const countries = [
   'United States', 'United Kingdom', 'United Arab Emirates', 'Pakistan', 'India',
@@ -30,6 +30,10 @@ export default function Signup() {
   const onSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    const emailErr = validateLegalEmail(form.email)
+    if (emailErr) return setError(emailErr)
+
     if (form.password !== form.confirm) return setError('Passwords do not match')
     if (!agreed) return setError('Please accept the Terms & Agreement')
 
