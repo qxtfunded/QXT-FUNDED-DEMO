@@ -6,10 +6,12 @@ export default function Maintenance() {
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-radial-glow px-6 text-center">
       <div className="absolute inset-0 bg-grid-fade bg-grid opacity-30" />
       <div className="relative">
-        <div className="mx-auto flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gold-300 to-gold-600 text-ink-950">
-            <TrendingUp size={18} strokeWidth={2.5} />
-          </span>
+        <div className="mx-auto flex items-center justify-center gap-2.5">
+          <img
+            src="/logo.png"
+            alt="QXT Funded"
+            className="h-8 w-8 rounded-lg object-cover border border-white/10 shadow-sm"
+          />
           <span className="font-display text-lg font-semibold">
             <span className="text-gold-400">QXT</span> Funded
           </span>

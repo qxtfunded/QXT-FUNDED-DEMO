@@ -5,11 +5,12 @@ export const instantPlans = [
   { size: 3000, price: 70, dailyLoss: 700, split: 92 },
   { size: 5000, price: 116, dailyLoss: 1167, split: 92 },
   { size: 8000, price: 186, dailyLoss: 1867, split: 92 },
-  { size: 11000, price: 256, dailyLoss: 2567, split: 92, popular: true },
-  { size: 14000, price: 326, dailyLoss: 3267, split: 92 },
-  { size: 17000, price: 396, dailyLoss: 3967, split: 92 },
-  { size: 20000, price: 466, dailyLoss: 4667, split: 92 },
-  { size: 23000, price: 536, dailyLoss: 5367, split: 92 },
+  { size: 11000, price: 256, dailyLoss: 2567, split: 92 },
+  { size: 15000, price: 349, dailyLoss: 3500, split: 92 },
+  { size: 20000, price: 466, dailyLoss: 4667, split: 92, popular: true },
+  { size: 25000, price: 582, dailyLoss: 5833, split: 92 },
+  { size: 35000, price: 815, dailyLoss: 8167, split: 92 },
+  { size: 50000, price: 1165, dailyLoss: 11667, split: 92 },
 ].map((p) => ({ ...p, type: 'instant', fundingLabel: 'Direct Funding' }))
 
 export const challengePlans = [

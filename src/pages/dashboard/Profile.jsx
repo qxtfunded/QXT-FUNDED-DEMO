@@ -84,13 +84,11 @@ export default function Profile() {
       <Card className="p-6" hover={false}>
         <div className="flex items-center gap-5">
           <div className="relative">
-            {userData?.photoURL ? (
-              <img src={userData.photoURL} alt="Avatar" className="h-20 w-20 rounded-full object-cover" />
-            ) : (
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gold-300 to-gold-600 font-display text-2xl font-bold text-ink-950">
-                {initial}
-              </div>
-            )}
+            <img
+              src={userData?.photoURL || '/logo.png'}
+              alt="Avatar"
+              className="h-20 w-20 rounded-full object-cover border-2 border-gold-500/40 shadow-md"
+            />
             <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink-800 bg-ink-700 text-paper-200 hover:text-gold-400">
               <Camera size={14} />
             </button>

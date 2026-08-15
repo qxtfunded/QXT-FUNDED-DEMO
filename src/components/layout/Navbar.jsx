@@ -35,10 +35,12 @@ export default function Navbar() {
       )}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2 group" onClick={() => setOpen(false)}>
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-gold-300 to-gold-600 text-ink-950 transition-transform group-hover:scale-105">
-            <TrendingUp size={18} strokeWidth={2.5} />
-          </span>
+        <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setOpen(false)}>
+          <img
+            src="/logo.png"
+            alt="QXT Funded"
+            className="h-8 w-8 rounded-lg object-cover shadow-sm transition-transform group-hover:scale-105 border border-white/10"
+          />
           <span className="font-display text-lg font-semibold tracking-tight">
             <span className="text-gold-400">QXT</span> Funded
           </span>
