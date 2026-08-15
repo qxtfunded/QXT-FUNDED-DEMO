@@ -85,8 +85,9 @@ export default function Profile() {
         <div className="flex items-center gap-5">
           <div className="relative">
             <img
-              src={userData?.photoURL || '/logo.png'}
+              src={userData?.photoURL || 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'}
               alt="Avatar"
+              referrerPolicy="no-referrer"
               className="h-20 w-20 rounded-full object-cover border-2 border-gold-500/40 shadow-md"
             />
             <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink-800 bg-ink-700 text-paper-200 hover:text-gold-400">

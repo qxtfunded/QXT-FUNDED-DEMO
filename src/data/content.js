@@ -1,3 +1,5 @@
+export const QXT_LOGO_URL = 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'
+
 export const brokers = [
   { id: 'pocketOption', name: 'Pocket Option', logoUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png', note: 'Fast execution, wide instrument range', desc: 'Top-rated broker with flexible options trade modes and premium liquidity levels.' },
   { id: 'quotex', name: 'Quotex', logoUrl: 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png', note: 'Low-latency order routing', desc: 'Highly customizable UI and perfect modern trading interface for active clients.' },

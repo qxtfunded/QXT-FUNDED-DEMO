@@ -136,8 +136,9 @@ export default function DashboardLayout() {
             {/* User Profile avatar */}
             <Link to="/dashboard/profile" className="flex items-center gap-2.5">
               <img
-                src={userData?.photoURL || '/logo.png'}
+                src={userData?.photoURL || 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'}
                 alt="Profile"
+                referrerPolicy="no-referrer"
                 className="h-9 w-9 rounded-full object-cover border border-gold-500/30 shadow-sm"
               />
               <span className="hidden text-sm font-medium text-paper-200 sm:block">{displayName}</span>
@@ -157,8 +158,9 @@ function SidebarContent({ onNavigate, onLogout }) {
     <>
       <Link to="/" className="flex items-center gap-2.5 px-6 py-6">
         <img
-          src="/logo.png"
+          src="https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg"
           alt="QXT Funded"
+          referrerPolicy="no-referrer"
           className="h-8 w-8 rounded-lg object-cover border border-white/10 shadow-sm"
         />
         <span className="font-display text-lg font-semibold">

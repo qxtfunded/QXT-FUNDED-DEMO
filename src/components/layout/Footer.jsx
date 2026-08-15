@@ -39,8 +39,9 @@ export default function Footer() {
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2.5">
               <img
-                src="/logo.png"
+                src="https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg"
                 alt="QXT Funded"
+                referrerPolicy="no-referrer"
                 className="h-8 w-8 rounded-lg object-cover border border-white/10 shadow-sm"
               />
               <span className="font-display text-lg font-semibold">

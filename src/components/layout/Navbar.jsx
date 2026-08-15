@@ -37,8 +37,9 @@ export default function Navbar() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setOpen(false)}>
           <img
-            src="/logo.png"
+            src="https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg"
             alt="QXT Funded"
+            referrerPolicy="no-referrer"
             className="h-8 w-8 rounded-lg object-cover shadow-sm transition-transform group-hover:scale-105 border border-white/10"
           />
           <span className="font-display text-lg font-semibold tracking-tight">
