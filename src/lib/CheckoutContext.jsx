@@ -96,7 +96,10 @@ export const CRYPTO_METHODS = [
     id: 'USDT ERC20',
     name: 'USDT ERC20',
     network: 'Ethereum Network (ERC-20)',
-    address: '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+    addresses: [
+      '0x5Ac211d983f172Bf5D7c7b6593e34Ea9b7952076',
+      '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+    ],
     symbol: 'USDT',
     badge: 'ERC20',
     logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
@@ -116,7 +119,10 @@ export const CRYPTO_METHODS = [
     id: 'USDT TRC20',
     name: 'USDT TRC20',
     network: 'TRON Network (TRC-20)',
-    address: 'TAGjTLjnSCY4CMYyxSozemY6pD34zRN45N',
+    addresses: [
+      'TL34GgR5QeVzE4rmxTbUvit53xfFNDJyQZ',
+      'TAGjTLjnSCY4CMYyxSozemY6pD34zRN45N',
+    ],
     symbol: 'USDT',
     badge: 'TRC20',
     logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
@@ -136,7 +142,10 @@ export const CRYPTO_METHODS = [
     id: 'USDT BEP20',
     name: 'USDT BEP20',
     network: 'BNB Smart Chain (BEP-20)',
-    address: '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+    addresses: [
+      '0x5Ac211d983f172Bf5D7c7b6593e34Ea9b7952076',
+      '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+    ],
     symbol: 'USDT',
     badge: 'BEP20',
     logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
@@ -156,7 +165,10 @@ export const CRYPTO_METHODS = [
     id: 'Bitcoin',
     name: 'Bitcoin',
     network: 'Bitcoin Mainnet',
-    address: 'bc1qdw69l0p22zg25pesct6l4hecjyw2349ytl37kz',
+    addresses: [
+      'bc1qxhn94zljv3r3588jk2uk38jl3zqydgjcnc4vf8',
+      'bc1qdw69l0p22zg25pesct6l4hecjyw2349ytl37kz',
+    ],
     symbol: 'BTC',
     badge: 'BTC',
     logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png',
@@ -176,7 +188,10 @@ export const CRYPTO_METHODS = [
     id: 'Ethereum',
     name: 'Ethereum',
     network: 'Ethereum Mainnet',
-    address: '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+    addresses: [
+      '0x5Ac211d983f172Bf5D7c7b6593e34Ea9b7952076',
+      '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+    ],
     symbol: 'ETH',
     badge: 'ETH',
     logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png',
@@ -220,6 +235,20 @@ export function CheckoutProvider({ children }) {
   const [couponApplied, setCouponApplied] = useState(false)
   const [agreed, setAgreed] = useState(false)
 
+  // Randomly select one of the two addresses for each network per checkout session
+  const [assignedAddresses] = useState(() => {
+    const map = {}
+    CRYPTO_METHODS.forEach((m) => {
+      if (m.addresses && m.addresses.length > 0) {
+        const randomIndex = Math.floor(Math.random() * m.addresses.length)
+        map[m.id] = m.addresses[randomIndex]
+      } else {
+        map[m.id] = m.address || ''
+      }
+    })
+    return map
+  })
+
   useEffect(() => {
     if (userData) {
       if (userData.fullName && !fullname) setFullname(userData.fullName)
@@ -232,7 +261,11 @@ export function CheckoutProvider({ children }) {
     }
   }, [user, userData])
 
-  const selectedMethod = CRYPTO_METHODS.find((m) => m.id === selectedMethodId) || CRYPTO_METHODS[0]
+  const baseMethod = CRYPTO_METHODS.find((m) => m.id === selectedMethodId) || CRYPTO_METHODS[0]
+  const selectedMethod = {
+    ...baseMethod,
+    address: assignedAddresses[baseMethod.id] || baseMethod.addresses?.[0] || '',
+  }
   const discount = couponApplied ? Math.round(plan.price * 0.1) : 0
   const total = plan.price - discount
 
