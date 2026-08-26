@@ -1,4 +1,5 @@
-// LiveChat Integration (License: 19886614)
+// LiveChat Integration (License: 19915466)
+export const LIVECHAT_LICENSE = 19915466
 
 export function initLiveChat() {
   if (typeof window === 'undefined') return
@@ -7,16 +8,10 @@ export function initLiveChat() {
   window.__lc_initialized = true
 
   window.__lc = window.__lc || {}
-  window.__lc.license = 19886614
+  window.__lc.license = LIVECHAT_LICENSE
   window.__lc.integration_name = "manual_channels"
   window.__lc.product_name = "livechat"
 
-  const script = document.createElement('script')
-  script.async = true
-  script.type = 'text/javascript'
-  script.src = 'https://cdn.livechatinc.com/tracking.js'
-
-  // Initialize LiveChatWidget queue if not present
   if (!window.LiveChatWidget) {
     const queue = []
     const _h = null
@@ -33,6 +28,10 @@ export function initLiveChat() {
       },
       call: function() { queue.push(['call', [].slice.call(arguments)]) },
       init: function() {
+        const script = document.createElement('script')
+        script.async = true
+        script.type = 'text/javascript'
+        script.src = 'https://cdn.livechatinc.com/tracking.js'
         document.head.appendChild(script)
       }
     }
@@ -41,12 +40,22 @@ export function initLiveChat() {
 
   window.LiveChatWidget.init()
 
-  // Hide default floating widget by default so it only opens when clicking "Live Chat" in Support Center
+  // Always hide the default blue bubble launcher to keep only the custom QXT UI widget
   window.LiveChatWidget.on('ready', () => {
     try {
       window.LiveChatWidget.call('hide')
     } catch (e) {
       console.error(e)
+    }
+  })
+
+  window.LiveChatWidget.on('visibility_changed', (data) => {
+    if (data && (data.visibility === 'minimized' || data.visibility === 'hidden')) {
+      try {
+        window.LiveChatWidget.call('hide')
+      } catch (e) {
+        console.error(e)
+      }
     }
   })
 }
@@ -56,7 +65,6 @@ export function openLiveChat() {
 
   if (window.LiveChatWidget && typeof window.LiveChatWidget.call === 'function') {
     try {
-      window.LiveChatWidget.call('show')
       window.LiveChatWidget.call('maximize')
       return
     } catch (err) {
@@ -65,5 +73,6 @@ export function openLiveChat() {
   }
 
   // Fallback to official LiveChat web window
-  window.open('https://www.livechat.com/chat-with/19886614/', '_blank', 'noopener,noreferrer')
+  window.open(`https://www.livechat.com/chat-with/${LIVECHAT_LICENSE}/`, '_blank', 'noopener,noreferrer')
 }
+

@@ -14,6 +14,7 @@ import {
   TrendingUp,
 } from 'lucide-react'
 import ScrollToTop from './ScrollToTop'
+import LiveChatFloatingButton from '../ui/LiveChatFloatingButton'
 import { useAuth } from '../../lib/AuthContext'
 import { subscribeUserNotifications } from '../../lib/firestore'
 
@@ -56,6 +57,7 @@ export default function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-ink-950 text-paper-50">
       <ScrollToTop />
+      <LiveChatFloatingButton />
       {/* Sidebar - desktop */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-white/[0.06] bg-ink-900/60 lg:flex">
         <SidebarContent onLogout={handleLogout} />
