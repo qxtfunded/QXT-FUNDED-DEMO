@@ -184,6 +184,11 @@ export default function Home() {
                   className="h-full w-full object-contain"
                   loading="eager"
                   referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    if (b.fallbackUrl && e.currentTarget.src !== b.fallbackUrl) {
+                      e.currentTarget.src = b.fallbackUrl
+                    }
+                  }}
                 />
               </div>
               <p className="text-sm font-semibold text-paper-100">{b.name}</p>

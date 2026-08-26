@@ -1,11 +1,47 @@
-export const QXT_LOGO_URL = 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'
+export const QXT_LOGO_URL = '/logo.png'
+export const QXT_LOGO_FALLBACK = 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'
 
 export const brokers = [
-  { id: 'pocketOption', name: 'Pocket Option', logoUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png', note: 'Fast execution, wide instrument range', desc: 'Top-rated broker with flexible options trade modes and premium liquidity levels.' },
-  { id: 'quotex', name: 'Quotex', logoUrl: 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png', note: 'Low-latency order routing', desc: 'Highly customizable UI and perfect modern trading interface for active clients.' },
-  { id: 'binomo', name: 'Binomo', logoUrl: 'https://i.ibb.co/kCCmxZ7/binomo-logo.png', note: 'Clean charting, mobile-first', desc: 'Robust and steady execution speed, excellent for scalping models and rapid entries.' },
-  { id: 'olympTrade', name: 'Olymp Trade', logoUrl: 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png', note: 'Established platform, deep liquidity', desc: 'Multi-market broker with deep indicators selection and lightning fast fills.' },
-  { id: 'tradowix', name: 'Tradowix', logoUrl: 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg', note: 'Institutional grade speed, high reliability', desc: 'Premium trading infrastructure with institutional grade speed.' },
+  {
+    id: 'pocketOption',
+    name: 'Pocket Option',
+    logoUrl: '/brokers/pocketoption.png',
+    fallbackUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png',
+    note: 'Fast execution, wide instrument range',
+    desc: 'Top-rated broker with flexible options trade modes and premium liquidity levels.',
+  },
+  {
+    id: 'quotex',
+    name: 'Quotex',
+    logoUrl: '/brokers/quotex.png',
+    fallbackUrl: 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png',
+    note: 'Low-latency order routing',
+    desc: 'Highly customizable UI and perfect modern trading interface for active clients.',
+  },
+  {
+    id: 'binomo',
+    name: 'Binomo',
+    logoUrl: '/brokers/binomo.png',
+    fallbackUrl: 'https://i.ibb.co/kCCmxZ7/binomo-logo.png',
+    note: 'Clean charting, mobile-first',
+    desc: 'Robust and steady execution speed, excellent for scalping models and rapid entries.',
+  },
+  {
+    id: 'olympTrade',
+    name: 'Olymp Trade',
+    logoUrl: '/brokers/olymptrade.png',
+    fallbackUrl: 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png',
+    note: 'Established platform, deep liquidity',
+    desc: 'Multi-market broker with deep indicators selection and lightning fast fills.',
+  },
+  {
+    id: 'tradowix',
+    name: 'Tradowix',
+    logoUrl: '/brokers/tradowix.jpg',
+    fallbackUrl: 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg',
+    note: 'Institutional grade speed, high reliability',
+    desc: 'Premium trading infrastructure with institutional grade speed.',
+  },
 ]
 
 export const howItWorks = [

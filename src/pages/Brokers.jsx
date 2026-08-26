@@ -28,6 +28,11 @@ export default function Brokers() {
                     className="h-full w-full object-contain"
                     loading="eager"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      if (b.fallbackUrl && e.currentTarget.src !== b.fallbackUrl) {
+                        e.currentTarget.src = b.fallbackUrl
+                      }
+                    }}
                   />
                 </div>
                 <Badge tone="mint">Active</Badge>

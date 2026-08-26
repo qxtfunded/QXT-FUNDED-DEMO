@@ -9,9 +9,14 @@ export default function AuthShell({ children, title, subtitle }) {
       <div className="flex w-full flex-col justify-center px-6 py-12 sm:px-12 lg:w-1/2 lg:px-20">
         <Link to="/" className="mb-10 flex items-center gap-2.5">
           <img
-            src="https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg"
+            src="/logo.png"
             alt="QXT Funded"
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              if (e.currentTarget.src !== 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg') {
+                e.currentTarget.src = 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'
+              }
+            }}
             className="h-8 w-8 rounded-lg object-cover border border-white/10 shadow-sm"
           />
           <span className="font-display text-lg font-semibold">

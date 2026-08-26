@@ -8,9 +8,14 @@ export default function Maintenance() {
       <div className="relative">
         <div className="mx-auto flex items-center justify-center gap-2.5">
           <img
-            src="https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg"
+            src="/logo.png"
             alt="QXT Funded"
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              if (e.currentTarget.src !== 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg') {
+                e.currentTarget.src = 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'
+              }
+            }}
             className="h-8 w-8 rounded-lg object-cover border border-white/10 shadow-sm"
           />
           <span className="font-display text-lg font-semibold">

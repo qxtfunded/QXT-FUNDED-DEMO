@@ -7,16 +7,22 @@ export const BROKERS = [
   {
     id: 'pocketOption',
     name: 'Pocket Option',
-    logoUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png',
+    logoUrl: '/brokers/pocketoption.png',
+    fallbackUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png',
     desc: 'Top-rated broker with flexible options trade modes and premium liquidity levels.',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png"
+          src="/brokers/pocketoption.png"
           alt="Pocket Option"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png') {
+              e.currentTarget.src = 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png'
+            }
+          }}
         />
       </div>
     ),
@@ -24,16 +30,22 @@ export const BROKERS = [
   {
     id: 'quotex',
     name: 'Quotex',
-    logoUrl: 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png',
+    logoUrl: '/brokers/quotex.png',
+    fallbackUrl: 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png',
     desc: 'Highly customizable UI and perfect modern trading interface for active clients.',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png"
+          src="/brokers/quotex.png"
           alt="Quotex"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png') {
+              e.currentTarget.src = 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png'
+            }
+          }}
         />
       </div>
     ),
@@ -41,16 +53,22 @@ export const BROKERS = [
   {
     id: 'binomo',
     name: 'Binomo',
-    logoUrl: 'https://i.ibb.co/kCCmxZ7/binomo-logo.png',
+    logoUrl: '/brokers/binomo.png',
+    fallbackUrl: 'https://i.ibb.co/kCCmxZ7/binomo-logo.png',
     desc: 'Robust and steady execution speed, excellent for scalping models and rapid entries.',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://i.ibb.co/kCCmxZ7/binomo-logo.png"
+          src="/brokers/binomo.png"
           alt="Binomo"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/kCCmxZ7/binomo-logo.png') {
+              e.currentTarget.src = 'https://i.ibb.co/kCCmxZ7/binomo-logo.png'
+            }
+          }}
         />
       </div>
     ),
@@ -58,16 +76,22 @@ export const BROKERS = [
   {
     id: 'olympTrade',
     name: 'Olymp Trade',
-    logoUrl: 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png',
+    logoUrl: '/brokers/olymptrade.png',
+    fallbackUrl: 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png',
     desc: 'Multi-market broker with deep indicators selection and lightning fast fills.',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png"
+          src="/brokers/olymptrade.png"
           alt="Olymp Trade"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png') {
+              e.currentTarget.src = 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png'
+            }
+          }}
         />
       </div>
     ),
@@ -75,16 +99,22 @@ export const BROKERS = [
   {
     id: 'tradowix',
     name: 'Tradowix',
-    logoUrl: 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg',
+    logoUrl: '/brokers/tradowix.jpg',
+    fallbackUrl: 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg',
     desc: 'Premium trading infrastructure with institutional grade speed.',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg"
+          src="/brokers/tradowix.jpg"
           alt="Tradowix"
           className="h-full w-full object-contain rounded-lg"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg') {
+              e.currentTarget.src = 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg'
+            }
+          }}
         />
       </div>
     ),
@@ -102,15 +132,21 @@ export const CRYPTO_METHODS = [
     ],
     symbol: 'USDT',
     badge: 'ERC20',
-    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
+    logoUrl: '/crypto/usdt.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png"
+          src="/crypto/usdt.png"
           alt="USDT ERC20"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png'
+            }
+          }}
         />
       </div>
     ),
@@ -125,15 +161,21 @@ export const CRYPTO_METHODS = [
     ],
     symbol: 'USDT',
     badge: 'TRC20',
-    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
+    logoUrl: '/crypto/usdt.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png"
+          src="/crypto/usdt.png"
           alt="USDT TRC20"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png'
+            }
+          }}
         />
       </div>
     ),
@@ -148,15 +190,21 @@ export const CRYPTO_METHODS = [
     ],
     symbol: 'USDT',
     badge: 'BEP20',
-    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
+    logoUrl: '/crypto/usdt.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png"
+          src="/crypto/usdt.png"
           alt="USDT BEP20"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png'
+            }
+          }}
         />
       </div>
     ),
@@ -171,15 +219,21 @@ export const CRYPTO_METHODS = [
     ],
     symbol: 'BTC',
     badge: 'BTC',
-    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png',
+    logoUrl: '/crypto/btc.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png"
+          src="/crypto/btc.png"
           alt="Bitcoin"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png'
+            }
+          }}
         />
       </div>
     ),
@@ -194,15 +248,21 @@ export const CRYPTO_METHODS = [
     ],
     symbol: 'ETH',
     badge: 'ETH',
-    logoUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png',
+    logoUrl: '/crypto/eth.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png',
     logo: (
       <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
         <img
-          src="https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png"
+          src="/crypto/eth.png"
           alt="Ethereum"
           className="h-full w-full object-contain"
           loading="eager"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png'
+            }
+          }}
         />
       </div>
     ),
