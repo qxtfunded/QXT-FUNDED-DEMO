@@ -129,6 +129,7 @@ export const CRYPTO_METHODS = [
     addresses: [
       '0x5Ac211d983f172Bf5D7c7b6593e34Ea9b7952076',
       '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+      '0x974CeF5BE55E416B0b4eBC259F4dD2d0571Ee552',
     ],
     symbol: 'USDT',
     badge: 'ERC20',
@@ -158,6 +159,7 @@ export const CRYPTO_METHODS = [
     addresses: [
       'TL34GgR5QeVzE4rmxTbUvit53xfFNDJyQZ',
       'TAGjTLjnSCY4CMYyxSozemY6pD34zRN45N',
+      'TQLG3gqQdqaC2q48EUWMigzaVmHsbyDkH9',
     ],
     symbol: 'USDT',
     badge: 'TRC20',
@@ -187,6 +189,7 @@ export const CRYPTO_METHODS = [
     addresses: [
       '0x5Ac211d983f172Bf5D7c7b6593e34Ea9b7952076',
       '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+      '0x974CeF5BE55E416B0b4eBC259F4dD2d0571Ee552',
     ],
     symbol: 'USDT',
     badge: 'BEP20',
@@ -216,6 +219,7 @@ export const CRYPTO_METHODS = [
     addresses: [
       'bc1qxhn94zljv3r3588jk2uk38jl3zqydgjcnc4vf8',
       'bc1qdw69l0p22zg25pesct6l4hecjyw2349ytl37kz',
+      'bc1qf2calujx5qf5csasgqapj6fmhfrtfp5gwk9qe4',
     ],
     symbol: 'BTC',
     badge: 'BTC',
@@ -245,6 +249,7 @@ export const CRYPTO_METHODS = [
     addresses: [
       '0x5Ac211d983f172Bf5D7c7b6593e34Ea9b7952076',
       '0x000e9bbAf90Cd44B9BD60d32035e9643BFec1D48',
+      '0x974CeF5BE55E416B0b4eBC259F4dD2d0571Ee552',
     ],
     symbol: 'ETH',
     badge: 'ETH',
