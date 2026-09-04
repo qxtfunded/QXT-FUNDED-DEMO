@@ -37,6 +37,9 @@ import Refund from './pages/legal/Refund'
 import Risk from './pages/legal/Risk'
 import Cookies from './pages/legal/Cookies'
 
+import ThankYou from './pages/ThankYou'
+import RouteMetaTracker from './components/layout/RouteMetaTracker'
+
 import NotFound from './pages/NotFound'
 import ServerError from './pages/ServerError'
 import Maintenance from './pages/Maintenance'
@@ -48,6 +51,7 @@ export default function App() {
 
   return (
     <AuthProvider>
+      <RouteMetaTracker />
       <Routes>
         {/* Public marketing site */}
         <Route element={<SiteLayout />}>
@@ -59,9 +63,16 @@ export default function App() {
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/support" element={<Support />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/thank-you" element={<ThankYou />} />
 
           <Route path="/legal/terms" element={<Terms />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/terms-and-conditions" element={<Terms />} />
+
           <Route path="/legal/privacy" element={<Privacy />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/privacy-policy" element={<Privacy />} />
+
           <Route path="/legal/refund" element={<Refund />} />
           <Route path="/legal/risk" element={<Risk />} />
           <Route path="/legal/cookies" element={<Cookies />} />

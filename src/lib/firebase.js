@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { initializeFirestore, getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
+import { getAnalytics, isSupported, logEvent } from 'firebase/analytics'
 
 const firebaseConfig = {
   apiKey: "AIzaSyB_q1hwzqaLWmHfBs3OnGa8DUQZr-ALsZg",
@@ -29,6 +30,32 @@ try {
 export const db = firestoreDb
 export const storage = getStorage(app)
 export const googleProvider = new GoogleAuthProvider()
+
+let analyticsInstance = null
+if (typeof window !== 'undefined') {
+  isSupported().then((supported) => {
+    if (supported) {
+      try {
+        analyticsInstance = getAnalytics(app)
+      } catch (err) {
+        // Safe fallback
+      }
+    }
+  }).catch(() => {})
+}
+
+export function logAnalyticsEvent(eventName, eventParams = {}) {
+  try {
+    if (analyticsInstance) {
+      logEvent(analyticsInstance, eventName, eventParams)
+    }
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', eventName, eventParams)
+    }
+  } catch (e) {
+    // non-blocking
+  }
+}
 
 export const OperationType = {
   CREATE: 'create',

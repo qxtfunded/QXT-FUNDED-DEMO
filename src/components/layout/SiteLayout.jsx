@@ -3,6 +3,8 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import ScrollToTop from './ScrollToTop'
 import LiveChatFloatingButton from '../ui/LiveChatFloatingButton'
+import CookieBanner from '../ui/CookieBanner'
+import StickyMobileCTA from '../ui/StickyMobileCTA'
 
 export default function SiteLayout() {
   return (
@@ -13,6 +15,8 @@ export default function SiteLayout() {
         <Outlet />
       </main>
       <Footer />
+      <StickyMobileCTA />
+      <CookieBanner />
       <LiveChatFloatingButton />
     </div>
   )
