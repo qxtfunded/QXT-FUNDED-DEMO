@@ -4,7 +4,7 @@ import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 
 import { Card, Badge } from '../../components/ui/Primitives'
 import { Label, Input } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
-import { auth } from '../../lib/firebase'
+import { auth, refineErrorMessage } from '../../lib/firebase'
 import { useAuth } from '../../lib/AuthContext'
 
 export default function Security() {
@@ -43,7 +43,7 @@ export default function Security() {
       }
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Failed to update password. Please check your current password.')
+      setError(refineErrorMessage(err, 'Failed to update password. Please check your current password.'))
     } finally {
       setSubmitting(false)
     }

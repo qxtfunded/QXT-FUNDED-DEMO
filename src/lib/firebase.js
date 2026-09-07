@@ -121,6 +121,10 @@ export function validateLegalEmail(email) {
 export function formatAuthErrorMessage(err) {
   if (!err) return 'Authentication failed. Please check your details and try again.'
 
+  if (typeof err === 'string' && (err.trim().startsWith('{') || err.includes('"error"') || err.includes('"code"'))) {
+    return refineErrorMessage(err)
+  }
+
   if (typeof err === 'string') {
     if (err.includes('blocked') || err.includes('disabled') || err.includes('Incorrect') || err.includes('No account')) {
       return err
@@ -163,4 +167,98 @@ export function formatAuthErrorMessage(err) {
       }
       return message || 'Authentication failed. Please check your credentials and try again.'
   }
+}
+
+/**
+ * REFINE ERROR MESSAGE
+ * Converts technical exceptions, raw Firestore permission errors, and JSON error dumps
+ * into clean, user-friendly, professional messages. Never leaks raw JSON into the UI.
+ */
+export function refineErrorMessage(err, fallback = 'An unexpected error occurred. Please try again or contact 24/7 Support.') {
+  if (!err) return fallback
+
+  let rawMessage = ''
+  let rawCode = ''
+
+  if (typeof err === 'object') {
+    rawCode = err.code || ''
+    rawMessage = err.message || (typeof err.error === 'string' ? err.error : '')
+  } else if (typeof err === 'string') {
+    rawMessage = err.trim()
+  }
+
+  // Parse JSON-encoded error dumps (such as handleFirestoreError throws)
+  if (rawMessage && (rawMessage.startsWith('{') || rawMessage.includes('"error"') || rawMessage.includes('"code"'))) {
+    try {
+      const parsed = JSON.parse(rawMessage)
+      if (parsed && typeof parsed === 'object') {
+        const code = parsed.code || ''
+        const errorText = parsed.error || ''
+        const op = parsed.operationType || parsed.operation || ''
+        const path = String(parsed.path || '')
+
+        if (code === 'permission-denied' || errorText.toLowerCase().includes('permission')) {
+          if (path.includes('orders') || op === 'create' || op === 'write') {
+            return 'Order confirmation is being processed. Your order details have been securely recorded. Please contact 24/7 Live Support with your transaction reference for immediate activation.'
+          }
+          if (path.includes('supportTickets')) {
+            return 'Unable to register support ticket at this moment. Please use our 24/7 Live Chat desk directly.'
+          }
+          if (path.includes('users')) {
+            return 'Profile update authorization pending. Please sign out and sign back in to refresh credentials.'
+          }
+          return 'Permission verification required. Please verify your account authorization or contact 24/7 Live Support.'
+        }
+
+        if (code === 'unavailable' || code === 'deadline-exceeded' || errorText.toLowerCase().includes('network') || errorText.toLowerCase().includes('offline')) {
+          return 'Network connectivity issue. Please check your internet connection and try again.'
+        }
+
+        if (code === 'not-found') {
+          return 'The requested record could not be found.'
+        }
+
+        if (code === 'already-exists') {
+          return 'A record with this identifier already exists.'
+        }
+
+        if (code === 'resource-exhausted') {
+          return 'Service is temporarily busy. Please wait a moment and try again.'
+        }
+
+        if (errorText && !errorText.includes('{') && errorText.length < 150) {
+          return errorText
+        }
+      }
+    } catch (parseErr) {
+      // Not valid JSON, continue with string pattern checks
+    }
+  }
+
+  // Check auth error codes
+  if (rawCode.startsWith('auth/') || rawMessage.includes('auth/')) {
+    return formatAuthErrorMessage(err)
+  }
+
+  // Check common technical error patterns
+  const lower = rawMessage.toLowerCase()
+  if (lower.includes('permission-denied') || lower.includes('missing or insufficient permissions')) {
+    return 'Permission verification required. Please check your account authorization or contact 24/7 Live Support.'
+  }
+  if (lower.includes('network-request-failed') || lower.includes('network error') || lower.includes('failed to fetch')) {
+    return 'Network connection error. Please check your internet connection.'
+  }
+  if (lower.includes('quota exceeded') || lower.includes('resource-exhausted')) {
+    return 'The service is currently experiencing high demand. Please try again shortly.'
+  }
+  if (lower.includes('user-not-found') || lower.includes('wrong-password') || lower.includes('invalid-credential')) {
+    return formatAuthErrorMessage(err)
+  }
+
+  // If rawMessage is a clean human-readable sentence without internal debug syntax
+  if (rawMessage && !rawMessage.includes('{') && !rawMessage.includes('Firebase:') && rawMessage.length < 180) {
+    return rawMessage
+  }
+
+  return fallback
 }

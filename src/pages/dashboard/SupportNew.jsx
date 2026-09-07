@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button'
 import { ticketCategories, ticketPriorities } from '../../data/tickets'
 import { useAuth } from '../../lib/AuthContext'
 import { createSupportTicket } from '../../lib/firestore'
+import { refineErrorMessage } from '../../lib/firebase'
 
 export default function SupportNew() {
   const navigate = useNavigate()
@@ -37,7 +38,7 @@ export default function SupportNew() {
       navigate('/dashboard/support')
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Failed to submit support ticket.')
+      setError(refineErrorMessage(err, 'Failed to submit support ticket. Please try again or use 24/7 Live Support.'))
     } finally {
       setSubmitting(false)
     }

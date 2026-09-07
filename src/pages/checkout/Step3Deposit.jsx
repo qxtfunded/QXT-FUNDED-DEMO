@@ -5,6 +5,7 @@ import { Card, Badge } from '../../components/ui/Primitives'
 import { Checkbox } from '../../components/ui/Form'
 import { useCheckout } from '../../lib/CheckoutContext'
 import { createOrder } from '../../lib/firestore'
+import { refineErrorMessage } from '../../lib/firebase'
 import CheckoutHeader from '../../components/checkout/CheckoutHeader'
 
 export default function Step3Deposit() {
@@ -62,8 +63,8 @@ export default function Step3Deposit() {
       })
       navigate(`/dashboard/orders/${newOrder.id || newOrder.orderNumber}`)
     } catch (err) {
-      console.error(err)
-      setError(err.message || 'Failed to submit order. Please try again.')
+      console.error('Order submission error:', err)
+      setError(refineErrorMessage(err, 'Failed to submit order. Please try again or contact 24/7 Live Support.'))
     } finally {
       setSubmitting(false)
     }

@@ -4,6 +4,7 @@ import { Card } from '../../components/ui/Primitives'
 import { Label, Input, Select } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
+import { refineErrorMessage } from '../../lib/firebase'
 
 export default function Profile() {
   const { user, userData, updateUserProfile, signOut } = useAuth()
@@ -43,7 +44,7 @@ export default function Profile() {
       setTimeout(() => setSaved(false), 3000)
     } catch (err) {
       console.error(err)
-      setError(err.message || 'Failed to update profile.')
+      setError(refineErrorMessage(err, 'Failed to update profile. Please try again.'))
     } finally {
       setSaving(false)
     }

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Paperclip, Send, FileText, Download } from 'lucide-react'
+import { ArrowLeft, Paperclip, Send, FileText, Download, AlertCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { Card, Badge } from '../../components/ui/Primitives'
 import { Textarea } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
 import { subscribeTicketDetail, addTicketReply } from '../../lib/firestore'
+import { refineErrorMessage } from '../../lib/firebase'
 
 const ticketStatusMeta = {
   Open: { label: 'Open', tone: 'gold' },
@@ -27,6 +28,7 @@ export default function SupportDetail() {
   const [reply, setReply] = useState('')
   const [file, setFile] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [replyError, setReplyError] = useState('')
 
   useEffect(() => {
     if (!id) return
@@ -40,13 +42,14 @@ export default function SupportDetail() {
   const handleSendReply = async () => {
     if (!reply.trim() || !ticket?.id) return
     setSubmitting(true)
+    setReplyError('')
     try {
       await addTicketReply(ticket.id, userData || user, reply.trim(), file)
       setReply('')
       setFile(null)
     } catch (err) {
       console.error('Error posting reply:', err)
-      alert('Failed to send reply. Please try again.')
+      setReplyError(refineErrorMessage(err, 'Failed to send reply. Please try again or use 24/7 Live Support.'))
     } finally {
       setSubmitting(false)
     }
@@ -135,6 +138,12 @@ export default function SupportDetail() {
 
       {!isClosed && (
         <Card className="p-4" hover={false}>
+          {replyError && (
+            <div className="mb-3 flex items-center gap-2 rounded-lg border border-signal-error/30 bg-signal-error/10 p-3 text-xs text-signal-error">
+              <AlertCircle size={16} className="shrink-0" />
+              <span>{replyError}</span>
+            </div>
+          )}
           <Textarea
             rows={3}
             placeholder="Type your reply…"

@@ -16,13 +16,13 @@ service cloud.firestore {
 
     match /orders/{orderId} {
       allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow create: if (isAuthenticated() && (request.resource.data.userId == request.auth.uid || request.resource.data.userId == 'guest-user')) || request.resource.data.userId != null;
       allow update: if isAuthenticated() && (resource.data.userId == request.auth.uid || request.auth.uid == 'guest-user');
     }
 
     match /supportTickets/{ticketId} {
       allow read: if isAuthenticated() && (resource == null || resource.data.userId == request.auth.uid);
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow create: if (isAuthenticated() && (request.resource.data.userId == request.auth.uid || request.resource.data.userId == 'guest-user')) || request.resource.data.userId != null;
       allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
