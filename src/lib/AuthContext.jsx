@@ -9,10 +9,15 @@ import {
   sendEmailVerification,
   updateProfile,
 } from 'firebase/auth'
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from './firebase'
+import { sanitizeInput, MAX_LENGTHS } from './security'
 
 const AuthContext = createContext(null)
+
+// Permitted profile fields that users can legitimately self-update
+const ALLOWED_PROFILE_KEYS = ['fullName', 'country', 'phone', 'photoURL']
+const STRICT_ADMIN_EMAIL = 'qxtfunded1@gmail.com'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -31,30 +36,38 @@ export function AuthProvider({ children }) {
       const snap = await getDoc(userRef)
       const now = new Date().toISOString()
 
+      // Sanitize any additional registration data passed from signup form
+      const safeAdditional = {}
+      if (additionalData.fullName) safeAdditional.fullName = sanitizeInput(additionalData.fullName, MAX_LENGTHS.NAME)
+      if (additionalData.country) safeAdditional.country = sanitizeInput(additionalData.country, MAX_LENGTHS.CITY)
+      if (additionalData.phone) safeAdditional.phone = sanitizeInput(additionalData.phone, MAX_LENGTHS.PHONE)
+
       if (snap.exists()) {
         const existingData = snap.data()
         const updated = {
           lastLogin: now,
           email: firebaseUser.email || existingData.email || '',
           photoURL: firebaseUser.photoURL || existingData.photoURL || '',
-          ...additionalData,
+          ...safeAdditional,
         }
         await updateDoc(userRef, updated)
         const fullData = { ...existingData, ...updated, uid: firebaseUser.uid }
         setUserData(fullData)
         return fullData
       } else {
+        const isOfficialAdmin = (firebaseUser.email || '').toLowerCase() === STRICT_ADMIN_EMAIL
         const newProfile = {
           uid: firebaseUser.uid,
-          fullName: additionalData.fullName || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Trader',
+          fullName: safeAdditional.fullName || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Trader',
           email: firebaseUser.email || '',
-          country: additionalData.country || 'United States',
-          phone: additionalData.phone || '',
+          country: safeAdditional.country || 'United States',
+          phone: safeAdditional.phone || '',
           photoURL: firebaseUser.photoURL || '',
           registrationDate: now,
           lastLogin: now,
           authProvider: firebaseUser.providerData[0]?.providerId || 'password',
           walletBalance: 0,
+          role: isOfficialAdmin ? 'admin' : 'trader',
         }
         await setDoc(userRef, newProfile)
         setUserData(newProfile)
@@ -69,11 +82,8 @@ export function AuthProvider({ children }) {
         email: firebaseUser.email || '',
         country: 'United States',
         phone: '',
-        photoURL: firebaseUser.photoURL || '',
         registrationDate: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        authProvider: 'password',
-        walletBalance: 0,
+        role: (firebaseUser.email || '').toLowerCase() === STRICT_ADMIN_EMAIL ? 'admin' : 'trader',
       }
       setUserData(fallback)
       return fallback
@@ -167,6 +177,13 @@ export function AuthProvider({ children }) {
   }, [syncUserData])
 
   const signOut = useCallback(async () => {
+    try {
+      // Clear sensitive local storage items upon signout to avoid shared device leakage
+      localStorage.removeItem('qxt_admin_mode')
+      sessionStorage.removeItem('spa_redirect')
+    } catch (e) {
+      // Ignore storage cleanup issues
+    }
     await firebaseSignOut(auth)
     setUser(null)
     setUserData(null)
@@ -183,30 +200,42 @@ export function AuthProvider({ children }) {
   }, [])
 
   const updateUserProfile = useCallback(async (updates) => {
-    if (!auth.currentUser) return
-    const userRef = doc(db, 'users', auth.currentUser.uid)
-    await updateDoc(userRef, updates)
-    if (updates.fullName && auth.currentUser) {
-      await updateProfile(auth.currentUser, { displayName: updates.fullName })
+    if (!auth.currentUser || !updates || typeof updates !== 'object') return
+
+    // Enforce strict whitelist of permitted profile fields (prevent privilege escalation)
+    const sanitizedUpdates = {}
+    for (const key of Object.keys(updates)) {
+      if (ALLOWED_PROFILE_KEYS.includes(key)) {
+        if (key === 'fullName') {
+          sanitizedUpdates.fullName = sanitizeInput(updates.fullName, MAX_LENGTHS.NAME)
+        } else if (key === 'phone') {
+          sanitizedUpdates.phone = sanitizeInput(updates.phone, MAX_LENGTHS.PHONE)
+        } else if (key === 'country') {
+          sanitizedUpdates.country = sanitizeInput(updates.country, MAX_LENGTHS.CITY)
+        } else if (key === 'photoURL') {
+          sanitizedUpdates.photoURL = sanitizeInput(updates.photoURL, 500)
+        }
+      }
     }
-    setUserData((prev) => (prev ? { ...prev, ...updates } : updates))
+
+    if (Object.keys(sanitizedUpdates).length === 0) return
+
+    const userRef = doc(db, 'users', auth.currentUser.uid)
+    await updateDoc(userRef, sanitizedUpdates)
+    if (sanitizedUpdates.fullName && auth.currentUser) {
+      await updateProfile(auth.currentUser, { displayName: sanitizedUpdates.fullName })
+    }
+    setUserData((prev) => (prev ? { ...prev, ...sanitizedUpdates } : sanitizedUpdates))
   }, [])
 
-  const [adminMode, setAdminMode] = useState(() => localStorage.getItem('qxt_admin_mode') === 'true')
-
+  // Admin access strictly authorized via database role or verified administrator identity
   const toggleAdmin = useCallback(() => {
-    setAdminMode((prev) => {
-      const next = !prev
-      localStorage.setItem('qxt_admin_mode', String(next))
-      return next
-    })
+    // Deprecated for security: client-side privilege escalation is permanently disabled
   }, [])
 
   const isAdmin = Boolean(
-    adminMode ||
     userData?.role === 'admin' ||
-    user?.email?.toLowerCase().includes('admin') ||
-    user?.email?.toLowerCase() === 'qxtfunded1@gmail.com'
+    user?.email?.toLowerCase() === STRICT_ADMIN_EMAIL
   )
 
   return (

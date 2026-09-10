@@ -5,6 +5,7 @@ import { Eyebrow, Section, Card } from '../components/ui/Primitives'
 import { Label, Input, Textarea } from '../components/ui/Form'
 import Button from '../components/ui/Button'
 import { validateLegalEmail } from '../lib/firebase'
+import { checkRateLimit, sanitizeInput, MAX_LENGTHS } from '../lib/security'
 
 export default function Contact() {
   const navigate = useNavigate()
@@ -16,7 +17,13 @@ export default function Contact() {
     e.preventDefault()
     setError('')
 
-    if (!form.name.trim()) {
+    const rateCheck = checkRateLimit('contact_submit', 3, 60000)
+    if (!rateCheck.allowed) {
+      return setError(rateCheck.error)
+    }
+
+    const cleanName = sanitizeInput(form.name, MAX_LENGTHS.NAME)
+    if (!cleanName) {
       return setError('Please enter your full name.')
     }
 
@@ -25,7 +32,8 @@ export default function Contact() {
       return setError(emailErr)
     }
 
-    if (!form.message.trim() || form.message.trim().length < 10) {
+    const cleanMessage = sanitizeInput(form.message, MAX_LENGTHS.MESSAGE)
+    if (!cleanMessage || cleanMessage.length < 10) {
       return setError('Please provide a message with at least 10 characters so we can assist you.')
     }
 

@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { db, storage, auth, handleFirestoreError, OperationType } from './firebase'
+import { validateFileUpload, sanitizeFileName, sanitizeInput, MAX_LENGTHS } from './security'
 
 /**
  * LOCAL ORDER PERSISTENCE
@@ -36,10 +37,10 @@ function saveLocalOrder(order) {
 
 export function getLocalOrders(userId) {
   try {
+    if (!userId) return []
     const raw = localStorage.getItem('qxt_local_orders')
     const list = raw ? JSON.parse(raw) : []
-    if (!userId) return list
-    return list.filter((o) => o.userId === userId || o.userId === 'guest-user' || !o.userId)
+    return list.filter((o) => o.userId === userId)
   } catch (e) {
     return []
   }
@@ -80,7 +81,11 @@ export async function createOrder(orderData) {
   const currentUid = auth.currentUser?.uid
   const finalUserId = currentUid || orderData.userId || 'guest-user'
   const finalUserEmail = auth.currentUser?.email || orderData.userEmail || ''
-  const finalUserName = auth.currentUser?.displayName || orderData.userName || 'Valued Trader'
+  const finalUserName = sanitizeInput(auth.currentUser?.displayName || orderData.userName || 'Valued Trader', MAX_LENGTHS.NAME)
+
+  const sanitizedSize = Math.max(1000, Math.min(1000000, Math.round(Number(orderData.size) || 10000)))
+  const sanitizedPrice = Math.max(1, Math.min(50000, Number(orderData.price) || 100))
+  const sanitizedDiscount = Math.max(0, Math.min(sanitizedPrice, Number(orderData.discount) || 0))
 
   const newOrder = {
     id: orderNumber,
@@ -88,33 +93,33 @@ export async function createOrder(orderData) {
     userId: finalUserId,
     userName: finalUserName,
     userEmail: finalUserEmail,
-    userPhone: orderData.userPhone || '',
-    userCountry: orderData.userCountry || '',
-    address: orderData.address || '',
-    city: orderData.city || '',
-    postal: orderData.postal || '',
-    broker: orderData.broker || 'Quotex',
-    paymentMethod: orderData.paymentMethod || 'USDT TRC20',
-    planName: orderData.planName || 'Instant Funding',
-    type: orderData.type || 'Instant', // Instant or Challenge
-    size: Number(orderData.size) || 10000,
-    price: Number(orderData.price) || 100,
-    discount: Number(orderData.discount) || 0,
+    userPhone: sanitizeInput(orderData.userPhone || '', MAX_LENGTHS.PHONE),
+    userCountry: sanitizeInput(orderData.userCountry || '', MAX_LENGTHS.CITY),
+    address: sanitizeInput(orderData.address || '', MAX_LENGTHS.ADDRESS),
+    city: sanitizeInput(orderData.city || '', MAX_LENGTHS.CITY),
+    postal: sanitizeInput(orderData.postal || '', 20),
+    broker: sanitizeInput(orderData.broker || 'Quotex', 50),
+    paymentMethod: sanitizeInput(orderData.paymentMethod || 'USDT TRC20', 50),
+    planName: sanitizeInput(orderData.planName || 'Instant Funding', 100),
+    type: orderData.type === 'Challenge' ? 'Challenge' : 'Instant',
+    size: sanitizedSize,
+    price: sanitizedPrice,
+    discount: sanitizedDiscount,
     status: 'Pending', // Pending, Processing, Waiting For Callback, Completed, Rejected
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     accountDetails: {
-      accountSize: Number(orderData.size) || 10000,
+      accountSize: sanitizedSize,
       purchaseDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      broker: orderData.broker || 'Quotex',
+      broker: sanitizeInput(orderData.broker || 'Quotex', 50),
       challengeType: orderData.type === 'Challenge' ? '2-Step Challenge' : 'Instant Funding',
-      dailyLossLimit: '$' + ((Number(orderData.size) || 10000) * 0.05).toLocaleString(),
-      maxDrawdown: '$' + ((Number(orderData.size) || 10000) * 0.10).toLocaleString(),
-      profitTarget: orderData.type === 'Challenge' ? '$' + ((Number(orderData.size) || 10000) * 0.08).toLocaleString() : 'N/A',
+      dailyLossLimit: '$' + (sanitizedSize * 0.05).toLocaleString(),
+      maxDrawdown: '$' + (sanitizedSize * 0.10).toLocaleString(),
+      profitTarget: orderData.type === 'Challenge' ? '$' + (sanitizedSize * 0.08).toLocaleString() : 'N/A',
       currentProfit: '$0.00',
       currentLoss: '$0.00',
-      remainingDailyLoss: '$' + ((Number(orderData.size) || 10000) * 0.05).toLocaleString(),
-      remainingDrawdown: '$' + ((Number(orderData.size) || 10000) * 0.10).toLocaleString(),
+      remainingDailyLoss: '$' + (sanitizedSize * 0.05).toLocaleString(),
+      remainingDrawdown: '$' + (sanitizedSize * 0.10).toLocaleString(),
       withdrawableProfit: '$0.00',
       accountStatus: 'Pending Activation',
     },
@@ -341,8 +346,13 @@ export async function createSupportTicket(ticketData, file = null) {
   let attachmentUrl = ''
 
   if (file) {
+    const fileCheck = validateFileUpload(file)
+    if (!fileCheck.valid) {
+      throw new Error(fileCheck.error)
+    }
     try {
-      const storageRef = ref(storage, `attachments/${ticketData.userId}/${Date.now()}_${file.name}`)
+      const safeName = sanitizeFileName(file.name)
+      const storageRef = ref(storage, `attachments/${ticketData.userId}/${Date.now()}_${safeName}`)
       await uploadBytes(storageRef, file)
       attachmentUrl = await getDownloadURL(storageRef)
     } catch (err) {
@@ -352,18 +362,20 @@ export async function createSupportTicket(ticketData, file = null) {
 
   const now = new Date().toISOString()
   const formattedDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const sanitizedSubject = sanitizeInput(ticketData.subject || '', MAX_LENGTHS.SUBJECT)
+  const sanitizedMessage = sanitizeInput(ticketData.message || '', MAX_LENGTHS.MESSAGE)
 
   const ticketDocRef = doc(db, 'supportTickets', ticketNumber)
   const newTicket = {
     id: ticketNumber,
     ticketNumber,
     userId: ticketData.userId,
-    userName: ticketData.userName || '',
-    userEmail: ticketData.userEmail || '',
-    subject: ticketData.subject || '',
-    category: ticketData.category || 'General',
-    priority: ticketData.priority || 'Medium',
-    message: ticketData.message || '',
+    userName: sanitizeInput(ticketData.userName || '', MAX_LENGTHS.NAME),
+    userEmail: sanitizeInput(ticketData.userEmail || '', MAX_LENGTHS.EMAIL),
+    subject: sanitizedSubject,
+    category: sanitizeInput(ticketData.category || 'General', 50),
+    priority: sanitizeInput(ticketData.priority || 'Medium', 20),
+    message: sanitizedMessage,
     attachmentUrl,
     status: 'Open', // Open, Waiting Reply, Answered, Closed
     createdAt: now,
@@ -371,8 +383,8 @@ export async function createSupportTicket(ticketData, file = null) {
     messages: [
       {
         from: 'user',
-        senderName: ticketData.userName || 'You',
-        text: ticketData.message,
+        senderName: sanitizeInput(ticketData.userName || 'You', MAX_LENGTHS.NAME),
+        text: sanitizedMessage,
         attachmentUrl,
         time: formattedDate,
         timestamp: now,
@@ -444,8 +456,13 @@ export function addTicketReply(ticketId, user, text, file = null) {
   return new Promise(async (resolve, reject) => {
     let attachmentUrl = ''
     if (file) {
+      const fileCheck = validateFileUpload(file)
+      if (!fileCheck.valid) {
+        return reject(new Error(fileCheck.error))
+      }
       try {
-        const storageRef = ref(storage, `attachments/${user.uid}/${Date.now()}_${file.name}`)
+        const safeName = sanitizeFileName(file.name)
+        const storageRef = ref(storage, `attachments/${user.uid}/${Date.now()}_${safeName}`)
         await uploadBytes(storageRef, file)
         attachmentUrl = await getDownloadURL(storageRef)
       } catch (err) {
@@ -455,11 +472,12 @@ export function addTicketReply(ticketId, user, text, file = null) {
 
     const now = new Date().toISOString()
     const formattedDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    const sanitizedText = sanitizeInput(text || '', MAX_LENGTHS.MESSAGE)
 
     const replyMsg = {
       from: 'user',
-      senderName: user.fullName || user.displayName || 'You',
-      text,
+      senderName: sanitizeInput(user.fullName || user.displayName || 'You', MAX_LENGTHS.NAME),
+      text: sanitizedText,
       attachmentUrl,
       time: formattedDate,
       timestamp: now,

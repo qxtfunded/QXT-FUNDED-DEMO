@@ -8,6 +8,7 @@ import { ticketCategories, ticketPriorities } from '../../data/tickets'
 import { useAuth } from '../../lib/AuthContext'
 import { createSupportTicket } from '../../lib/firestore'
 import { refineErrorMessage } from '../../lib/firebase'
+import { validateFileUpload, checkRateLimit, clearRateLimit } from '../../lib/security'
 
 export default function SupportNew() {
   const navigate = useNavigate()
@@ -17,10 +18,30 @@ export default function SupportNew() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
+  const handleFileChange = (e) => {
+    setError('')
+    const selected = e.target.files?.[0]
+    if (!selected) return
+
+    const check = validateFileUpload(selected)
+    if (!check.valid) {
+      setError(check.error)
+      e.target.value = ''
+      setFile(null)
+      return
+    }
+    setFile(selected)
+  }
+
   const onSubmit = async (e) => {
     e.preventDefault()
     if (!form.subject.trim() || !form.message.trim()) {
       return setError('Please fill in all required fields.')
+    }
+
+    const rateCheck = checkRateLimit('create_ticket', 4, 60000)
+    if (!rateCheck.allowed) {
+      return setError(rateCheck.error)
     }
 
     setSubmitting(true)
@@ -35,6 +56,7 @@ export default function SupportNew() {
         },
         file
       )
+      clearRateLimit('create_ticket')
       navigate('/dashboard/support')
     } catch (err) {
       console.error(err)
@@ -97,8 +119,9 @@ export default function SupportNew() {
             <input
               id="file-upload"
               type="file"
+              accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
               className="hidden"
-              onChange={(e) => e.target.files?.[0] && setFile(e.target.files[0])}
+              onChange={handleFileChange}
             />
             {file && (
               <div className="mt-2 flex items-center gap-2 rounded bg-ink-800 px-3 py-1.5 text-xs text-paper-200">

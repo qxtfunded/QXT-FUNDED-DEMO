@@ -6,6 +6,7 @@ import { Label, Input, Checkbox } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
 import { formatAuthErrorMessage } from '../../lib/firebase'
+import { getSafeRedirectUrl, checkRateLimit, clearRateLimit } from '../../lib/security'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -16,14 +17,21 @@ export default function Login() {
   const { signIn, loading } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const redirectTarget = searchParams.get('redirect') ? decodeURIComponent(searchParams.get('redirect')) : '/dashboard'
+  const redirectTarget = getSafeRedirectUrl(searchParams.get('redirect'), '/dashboard')
 
   const onSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    const rateCheck = checkRateLimit('login_attempt', 5, 60000)
+    if (!rateCheck.allowed) {
+      return setError(rateCheck.error)
+    }
+
     setSubmitting(true)
     try {
-      await signIn(email, password)
+      await signIn(email.trim(), password)
+      clearRateLimit('login_attempt')
       navigate(redirectTarget)
     } catch (err) {
       console.error(err)

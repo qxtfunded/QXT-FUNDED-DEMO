@@ -6,6 +6,7 @@ import { Label, Input, Select, Checkbox } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
 import { formatAuthErrorMessage, validateLegalEmail } from '../../lib/firebase'
+import { getSafeRedirectUrl, validatePasswordStrength, checkRateLimit, clearRateLimit } from '../../lib/security'
 
 const countries = [
   'United States', 'United Kingdom', 'United Arab Emirates', 'Pakistan', 'India',
@@ -23,7 +24,7 @@ export default function Signup() {
   const { signUp, loading } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const redirectTarget = searchParams.get('redirect') ? decodeURIComponent(searchParams.get('redirect')) : '/dashboard'
+  const redirectTarget = getSafeRedirectUrl(searchParams.get('redirect'), '/dashboard')
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
@@ -31,15 +32,25 @@ export default function Signup() {
     e.preventDefault()
     setError('')
 
+    const rateCheck = checkRateLimit('signup_attempt', 4, 60000)
+    if (!rateCheck.allowed) {
+      return setError(rateCheck.error)
+    }
+
     const emailErr = validateLegalEmail(form.email)
     if (emailErr) return setError(emailErr)
 
     if (form.password !== form.confirm) return setError('Passwords do not match')
+
+    const passCheck = validatePasswordStrength(form.password)
+    if (!passCheck.valid) return setError(passCheck.error)
+
     if (!agreed) return setError('Please accept the Terms & Agreement')
 
     setSubmitting(true)
     try {
-      await signUp(form.name, form.email, form.password, form.country)
+      await signUp(form.name.trim(), form.email.trim(), form.password, form.country)
+      clearRateLimit('signup_attempt')
       navigate(redirectTarget)
     } catch (err) {
       console.error(err)

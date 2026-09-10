@@ -5,13 +5,13 @@ import { getStorage } from 'firebase/storage'
 import { getAnalytics, isSupported, logEvent } from 'firebase/analytics'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB_q1hwzqaLWmHfBs3OnGa8DUQZr-ALsZg",
-  authDomain: "qxtdemo.firebaseapp.com",
-  projectId: "qxtdemo",
-  storageBucket: "qxtdemo.firebasestorage.app",
-  messagingSenderId: "536088917861",
-  appId: "1:536088917861:web:18cafc1e8bad67be16938c",
-  measurementId: "G-F5VDSP9K2F"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB_q1hwzqaLWmHfBs3OnGa8DUQZr-ALsZg",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "qxtdemo.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "qxtdemo",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "qxtdemo.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "536088917861",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:536088917861:web:18cafc1e8bad67be16938c",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-F5VDSP9K2F"
 }
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)

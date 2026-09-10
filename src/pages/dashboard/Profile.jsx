@@ -5,6 +5,7 @@ import { Label, Input, Select } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
 import { refineErrorMessage } from '../../lib/firebase'
+import { sanitizeInput, MAX_LENGTHS, checkRateLimit } from '../../lib/security'
 
 export default function Profile() {
   const { user, userData, updateUserProfile, signOut } = useAuth()
@@ -31,14 +32,20 @@ export default function Profile() {
 
   const handleSave = async (e) => {
     e.preventDefault()
+
+    const rateCheck = checkRateLimit('profile_update', 5, 60000)
+    if (!rateCheck.allowed) {
+      return setError(rateCheck.error)
+    }
+
     setSaving(true)
     setError('')
     setSaved(false)
     try {
       await updateUserProfile({
-        fullName: fullname,
-        phone,
-        country,
+        fullName: sanitizeInput(fullname, MAX_LENGTHS.NAME),
+        phone: sanitizeInput(phone, MAX_LENGTHS.PHONE),
+        country: sanitizeInput(country, MAX_LENGTHS.CITY),
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)

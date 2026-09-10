@@ -6,6 +6,7 @@ import { Label, Input } from '../../components/ui/Form'
 import Button from '../../components/ui/Button'
 import { auth, refineErrorMessage } from '../../lib/firebase'
 import { useAuth } from '../../lib/AuthContext'
+import { validatePasswordStrength, checkRateLimit, clearRateLimit } from '../../lib/security'
 
 export default function Security() {
   const { user } = useAuth()
@@ -21,11 +22,22 @@ export default function Security() {
     setError('')
     setSuccess(false)
 
-    if (newPass !== confirmPass) {
-      return setError('New passwords do not match')
+    const rateCheck = checkRateLimit('password_update', 3, 60000)
+    if (!rateCheck.allowed) {
+      return setError(rateCheck.error)
     }
-    if (newPass.length < 6) {
-      return setError('Password must be at least 6 characters long')
+
+    if (!current) {
+      return setError('Please enter your current password to authorize this change.')
+    }
+
+    if (newPass !== confirmPass) {
+      return setError('New passwords do not match.')
+    }
+
+    const passCheck = validatePasswordStrength(newPass)
+    if (!passCheck.valid) {
+      return setError(passCheck.error)
     }
 
     setSubmitting(true)
@@ -36,6 +48,7 @@ export default function Security() {
       }
       if (auth.currentUser) {
         await updatePassword(auth.currentUser, newPass)
+        clearRateLimit('password_update')
         setSuccess(true)
         setCurrent('')
         setNewPass('')
@@ -43,7 +56,7 @@ export default function Security() {
       }
     } catch (err) {
       console.error(err)
-      setError(refineErrorMessage(err, 'Failed to update password. Please check your current password.'))
+      setError(refineErrorMessage(err, 'Failed to update password. Please verify your current password.'))
     } finally {
       setSubmitting(false)
     }

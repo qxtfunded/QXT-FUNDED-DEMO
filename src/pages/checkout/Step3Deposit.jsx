@@ -7,6 +7,7 @@ import { useCheckout } from '../../lib/CheckoutContext'
 import { createOrder } from '../../lib/firestore'
 import { refineErrorMessage } from '../../lib/firebase'
 import CheckoutHeader from '../../components/checkout/CheckoutHeader'
+import { checkRateLimit, clearRateLimit } from '../../lib/security'
 
 export default function Step3Deposit() {
   const navigate = useNavigate()
@@ -43,6 +44,11 @@ export default function Step3Deposit() {
     setError('')
     if (!agreed) return setError('Please accept the Terms & Agreement before completing your order.')
 
+    const rateCheck = checkRateLimit('order_submit', 5, 60000)
+    if (!rateCheck.allowed) {
+      return setError(rateCheck.error)
+    }
+
     setSubmitting(true)
     try {
       const newOrder = await createOrder({
@@ -61,6 +67,7 @@ export default function Step3Deposit() {
         price: total,
         discount,
       })
+      clearRateLimit('order_submit')
       navigate(`/dashboard/orders/${newOrder.id || newOrder.orderNumber}`)
     } catch (err) {
       console.error('Order submission error:', err)
@@ -123,6 +130,7 @@ export default function Step3Deposit() {
                     <img
                       src={qrUrl}
                       alt={`${selectedMethod.name} QR Code`}
+                      referrerPolicy="no-referrer"
                       className="h-36 w-36 sm:h-44 sm:w-44 object-contain"
                       onError={(e) => {
                         e.target.onerror = null

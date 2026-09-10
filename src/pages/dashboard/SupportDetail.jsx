@@ -8,6 +8,7 @@ import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
 import { subscribeTicketDetail, addTicketReply } from '../../lib/firestore'
 import { refineErrorMessage } from '../../lib/firebase'
+import { validateFileUpload, checkRateLimit } from '../../lib/security'
 
 const ticketStatusMeta = {
   Open: { label: 'Open', tone: 'gold' },
@@ -30,6 +31,21 @@ export default function SupportDetail() {
   const [submitting, setSubmitting] = useState(false)
   const [replyError, setReplyError] = useState('')
 
+  const handleFileChange = (e) => {
+    setReplyError('')
+    const selected = e.target.files?.[0]
+    if (!selected) return
+
+    const check = validateFileUpload(selected)
+    if (!check.valid) {
+      setReplyError(check.error)
+      e.target.value = ''
+      setFile(null)
+      return
+    }
+    setFile(selected)
+  }
+
   useEffect(() => {
     if (!id) return
     const unsubscribe = subscribeTicketDetail(id, (data) => {
@@ -41,6 +57,12 @@ export default function SupportDetail() {
 
   const handleSendReply = async () => {
     if (!reply.trim() || !ticket?.id) return
+
+    const rateCheck = checkRateLimit('ticket_reply', 6, 60000)
+    if (!rateCheck.allowed) {
+      return setReplyError(rateCheck.error)
+    }
+
     setSubmitting(true)
     setReplyError('')
     try {
@@ -166,8 +188,9 @@ export default function SupportDetail() {
             <input
               id="reply-file"
               type="file"
+              accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf"
               className="hidden"
-              onChange={(e) => e.target.files?.[0] && setFile(e.target.files[0])}
+              onChange={handleFileChange}
             />
             <Button size="sm" onClick={handleSendReply} disabled={!reply.trim() || submitting}>
               {submitting ? 'Sending…' : 'Send Reply'} <Send size={14} />
