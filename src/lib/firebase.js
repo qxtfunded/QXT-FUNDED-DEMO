@@ -2,8 +2,8 @@ import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { initializeFirestore, getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
-import { getAnalytics, isSupported, logEvent } from 'firebase/analytics'
 
+// Firebase Configuration (Strict Zero-Telemetry Privacy Mode)
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyB_q1hwzqaLWmHfBs3OnGa8DUQZr-ALsZg",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "qxtdemo.firebaseapp.com",
@@ -11,7 +11,6 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "qxtdemo.firebasestorage.app",
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "536088917861",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:536088917861:web:18cafc1e8bad67be16938c",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-F5VDSP9K2F"
 }
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
@@ -31,30 +30,24 @@ export const db = firestoreDb
 export const storage = getStorage(app)
 export const googleProvider = new GoogleAuthProvider()
 
-let analyticsInstance = null
-if (typeof window !== 'undefined') {
-  isSupported().then((supported) => {
-    if (supported) {
-      try {
-        analyticsInstance = getAnalytics(app)
-      } catch (err) {
-        // Safe fallback
+// Proactively scrub tracking cookies & sanitize telemetry
+if (typeof document !== 'undefined') {
+  try {
+    const rawCookies = document.cookie ? document.cookie.split(';') : []
+    for (const c of rawCookies) {
+      const name = c.split('=')[0]?.trim()
+      if (name && (name.startsWith('_ga') || name.startsWith('_gid') || name.startsWith('_gat') || name.startsWith('__lc'))) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure`
       }
     }
-  }).catch(() => {})
+  } catch {
+    // Non-blocking cookie cleanup
+  }
 }
 
-export function logAnalyticsEvent(eventName, eventParams = {}) {
-  try {
-    if (analyticsInstance) {
-      logEvent(analyticsInstance, eventName, eventParams)
-    }
-    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-      window.gtag('event', eventName, eventParams)
-    }
-  } catch (e) {
-    // non-blocking
-  }
+// Zero-telemetry safe stub to preserve existing caller contracts without transmitting user IP/activity
+export function logAnalyticsEvent(_eventName, _eventParams = {}) {
+  // Telemetry explicitly disabled for trader anonymity and strict IP/cookie protection
 }
 
 export const OperationType = {

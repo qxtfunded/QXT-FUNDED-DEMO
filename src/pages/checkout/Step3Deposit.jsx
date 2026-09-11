@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import QRCode from 'qrcode'
 import { Copy, Check, QrCode, Lock, ArrowLeft, AlertCircle } from 'lucide-react'
 import { Card, Badge } from '../../components/ui/Primitives'
 import { Checkbox } from '../../components/ui/Form'
@@ -77,9 +78,30 @@ export default function Step3Deposit() {
     }
   }
 
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
-    selectedMethod.address
-  )}`
+  const [localQrUrl, setLocalQrUrl] = useState('')
+
+  useEffect(() => {
+    let active = true
+    if (selectedMethod?.address) {
+      QRCode.toDataURL(selectedMethod.address, {
+        width: 240,
+        margin: 1,
+        color: {
+          dark: '#06090e',
+          light: '#ffffff',
+        },
+      })
+        .then((url) => {
+          if (active) setLocalQrUrl(url)
+        })
+        .catch(() => {
+          if (active) setLocalQrUrl('')
+        })
+    }
+    return () => {
+      active = false
+    }
+  }, [selectedMethod?.address])
 
   return (
     <div className="min-h-screen pt-24 pb-20 bg-ink-950 text-paper-50">
@@ -127,16 +149,17 @@ export default function Step3Deposit() {
                 {/* QR Code */}
                 <div className="flex shrink-0 flex-col items-center gap-2">
                   <div className="rounded-2xl border border-white/15 bg-white p-2.5 sm:p-3 shadow-xl">
-                    <img
-                      src={qrUrl}
-                      alt={`${selectedMethod.name} QR Code`}
-                      referrerPolicy="no-referrer"
-                      className="h-36 w-36 sm:h-44 sm:w-44 object-contain"
-                      onError={(e) => {
-                        e.target.onerror = null
-                        e.target.style.display = 'none'
-                      }}
-                    />
+                    {localQrUrl ? (
+                      <img
+                        src={localQrUrl}
+                        alt={`${selectedMethod.name} QR Code`}
+                        className="h-36 w-36 sm:h-44 sm:w-44 object-contain"
+                      />
+                    ) : (
+                      <div className="flex h-36 w-36 sm:h-44 sm:w-44 items-center justify-center bg-ink-900 rounded-xl">
+                        <QrCode size={40} className="text-paper-400 animate-pulse" />
+                      </div>
+                    )}
                   </div>
                   <span className="flex items-center gap-1.5 text-xs text-paper-400 font-semibold">
                     <QrCode size={14} className="text-amber-400" /> Scan QR Code

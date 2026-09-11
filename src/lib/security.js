@@ -230,3 +230,33 @@ export function safeErrorLog(label, error) {
     console.warn(`[Security Safe Log] ${label}:`, redacted)
   }
 }
+
+/**
+ * Strict Privacy & Zero-IP Tracking Enforcer:
+ * Purges any third-party tracking identifiers, analytics cookies (_ga, _gid, _gat, etc.)
+ * to prevent IP address correlation and device fingerprinting.
+ */
+export function scrubPrivacyAndTrackingCookies() {
+  if (typeof document === 'undefined') return
+  try {
+    const cookies = document.cookie ? document.cookie.split(';') : []
+    for (const c of cookies) {
+      const name = c.split('=')[0]?.trim()
+      if (
+        name &&
+        (name.startsWith('_ga') ||
+          name.startsWith('_gid') ||
+          name.startsWith('_gat') ||
+          name.startsWith('_gcl') ||
+          name.startsWith('__lc') ||
+          name.startsWith('mp_') ||
+          name.startsWith('ajs_'))
+      ) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure`
+      }
+    }
+  } catch {
+    // Non-blocking
+  }
+}
+
