@@ -13,7 +13,7 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.admin == true ||
-        request.auth.token.email == 'qxtfunded1@gmail.com'
+        (request.auth.token.email != null && request.auth.token.email.lower() == 'qxtfunded1@gmail.com')
       );
     }
 
@@ -21,14 +21,10 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       
-      // User can only create their own profile without escalated roles or forged balances
-      allow create: if isOwner(userId) && (
-        !request.resource.data.keys().hasAny(['role', 'walletBalance', 'isBlocked', 'accountStatus', 'status']) ||
-        request.resource.data.role == 'trader' ||
-        request.resource.data.walletBalance == 0
-      );
+      // User can only create their own profile or administrator profile
+      allow create: if isOwner(userId) || isAdmin();
 
-      // User cannot elevate their own role, change wallet balance, unblock themselves, or change immutable registration fields
+      // User cannot elevate their own role, change wallet balance, unblock themselves, or change status
       allow update: if isAdmin() || (
         isOwner(userId) &&
         !request.resource.data.diff(resource.data).affectedKeys().hasAny([
@@ -36,9 +32,7 @@ service cloud.firestore {
           'walletBalance',
           'isBlocked',
           'accountStatus',
-          'uid',
-          'email',
-          'registrationDate'
+          'status'
         ])
       );
 

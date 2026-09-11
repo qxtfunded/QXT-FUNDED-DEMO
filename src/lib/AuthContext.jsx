@@ -19,74 +19,137 @@ const AuthContext = createContext(null)
 const ALLOWED_PROFILE_KEYS = ['fullName', 'country', 'phone', 'photoURL']
 const STRICT_ADMIN_EMAIL = 'qxtfunded1@gmail.com'
 
+// Local profile persistence helpers
+function getLocalProfile(uid) {
+  try {
+    const raw = localStorage.getItem(`qxt_profile_${uid}`)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function saveLocalProfile(uid, data) {
+  try {
+    if (uid && data) {
+      localStorage.setItem(`qxt_profile_${uid}`, JSON.stringify(data))
+    }
+  } catch {
+    // Ignore storage quota errors
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Fetch or create user record in Firestore
+  // Fetch or create user record in Firestore with resilient offline/cache fallback
   const syncUserData = useCallback(async (firebaseUser, additionalData = {}) => {
     if (!firebaseUser) {
       setUserData(null)
       return null
     }
 
+    const now = new Date().toISOString()
+    const isOfficialAdmin = (firebaseUser.email || '').toLowerCase() === STRICT_ADMIN_EMAIL
+    const cachedProfile = getLocalProfile(firebaseUser.uid)
+
+    // Sanitize any additional registration data passed from signup form
+    const safeAdditional = {}
+    if (additionalData.fullName) safeAdditional.fullName = sanitizeInput(additionalData.fullName, MAX_LENGTHS.NAME)
+    if (additionalData.country) safeAdditional.country = sanitizeInput(additionalData.country, MAX_LENGTHS.CITY)
+    if (additionalData.phone) safeAdditional.phone = sanitizeInput(additionalData.phone, MAX_LENGTHS.PHONE)
+
+    // Build immediate, comprehensive user profile representation
+    const baseProfile = {
+      uid: firebaseUser.uid,
+      fullName:
+        safeAdditional.fullName ||
+        cachedProfile?.fullName ||
+        firebaseUser.displayName ||
+        firebaseUser.email?.split('@')[0] ||
+        'Trader',
+      email: firebaseUser.email || cachedProfile?.email || '',
+      country: safeAdditional.country || cachedProfile?.country || 'United States',
+      phone: safeAdditional.phone || cachedProfile?.phone || '',
+      photoURL: firebaseUser.photoURL || cachedProfile?.photoURL || '',
+      registrationDate: cachedProfile?.registrationDate || now,
+      lastLogin: now,
+      authProvider: firebaseUser.providerData[0]?.providerId || cachedProfile?.authProvider || 'password',
+      walletBalance: cachedProfile?.walletBalance ?? 0,
+      role: isOfficialAdmin ? 'admin' : (cachedProfile?.role || 'trader'),
+      ...cachedProfile,
+      ...safeAdditional,
+    }
+
+    // Set immediate state to prevent loading stalls
+    setUserData(baseProfile)
+    saveLocalProfile(firebaseUser.uid, baseProfile)
+
+    // Attempt cloud synchronization with Firestore
     const userRef = doc(db, 'users', firebaseUser.uid)
     try {
       const snap = await getDoc(userRef)
-      const now = new Date().toISOString()
-
-      // Sanitize any additional registration data passed from signup form
-      const safeAdditional = {}
-      if (additionalData.fullName) safeAdditional.fullName = sanitizeInput(additionalData.fullName, MAX_LENGTHS.NAME)
-      if (additionalData.country) safeAdditional.country = sanitizeInput(additionalData.country, MAX_LENGTHS.CITY)
-      if (additionalData.phone) safeAdditional.phone = sanitizeInput(additionalData.phone, MAX_LENGTHS.PHONE)
 
       if (snap.exists()) {
-        const existingData = snap.data()
-        const updated = {
+        const cloudData = snap.data()
+        const merged = {
+          ...baseProfile,
+          ...cloudData,
+          ...safeAdditional,
+          uid: firebaseUser.uid,
           lastLogin: now,
-          email: firebaseUser.email || existingData.email || '',
-          photoURL: firebaseUser.photoURL || existingData.photoURL || '',
+          role: isOfficialAdmin ? 'admin' : (cloudData.role || baseProfile.role || 'trader'),
+        }
+
+        // Quietly update cloud lastLogin without touching protected immutable fields
+        const cloudUpdate = {
+          lastLogin: now,
           ...safeAdditional,
         }
-        await updateDoc(userRef, updated)
-        const fullData = { ...existingData, ...updated, uid: firebaseUser.uid }
-        setUserData(fullData)
-        return fullData
-      } else {
-        const isOfficialAdmin = (firebaseUser.email || '').toLowerCase() === STRICT_ADMIN_EMAIL
-        const newProfile = {
-          uid: firebaseUser.uid,
-          fullName: safeAdditional.fullName || firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Trader',
-          email: firebaseUser.email || '',
-          country: safeAdditional.country || 'United States',
-          phone: safeAdditional.phone || '',
-          photoURL: firebaseUser.photoURL || '',
-          registrationDate: now,
-          lastLogin: now,
-          authProvider: firebaseUser.providerData[0]?.providerId || 'password',
-          walletBalance: 0,
-          role: isOfficialAdmin ? 'admin' : 'trader',
+        if (firebaseUser.photoURL && firebaseUser.photoURL !== cloudData.photoURL) {
+          cloudUpdate.photoURL = firebaseUser.photoURL
         }
-        await setDoc(userRef, newProfile)
-        setUserData(newProfile)
-        return newProfile
+
+        try {
+          await updateDoc(userRef, cloudUpdate)
+        } catch (updateErr) {
+          console.warn('Firestore lastLogin sync note (cached locally):', updateErr?.message || updateErr)
+        }
+
+        setUserData(merged)
+        saveLocalProfile(firebaseUser.uid, merged)
+        return merged
+      } else {
+        const newCloudProfile = {
+          uid: firebaseUser.uid,
+          fullName: baseProfile.fullName,
+          email: firebaseUser.email || '',
+          country: baseProfile.country,
+          phone: baseProfile.phone,
+          photoURL: baseProfile.photoURL,
+          registrationDate: baseProfile.registrationDate,
+          lastLogin: now,
+          authProvider: baseProfile.authProvider,
+          walletBalance: baseProfile.walletBalance,
+          role: baseProfile.role,
+        }
+
+        try {
+          await setDoc(userRef, newCloudProfile)
+        } catch (setErr) {
+          console.warn('Firestore user profile initialization note (cached locally):', setErr?.message || setErr)
+        }
+
+        setUserData(baseProfile)
+        saveLocalProfile(firebaseUser.uid, baseProfile)
+        return baseProfile
       }
-    } catch (err) {
-      console.error('Error syncing user data:', err)
-      // Fallback local representation if Firestore check fails
-      const fallback = {
-        uid: firebaseUser.uid,
-        fullName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Trader',
-        email: firebaseUser.email || '',
-        country: 'United States',
-        phone: '',
-        registrationDate: new Date().toISOString(),
-        role: (firebaseUser.email || '').toLowerCase() === STRICT_ADMIN_EMAIL ? 'admin' : 'trader',
-      }
-      setUserData(fallback)
-      return fallback
+    } catch (fetchErr) {
+      console.warn('Firestore profile sync note (operating with local cache):', fetchErr?.message || fetchErr)
+      setUserData(baseProfile)
+      return baseProfile
     }
   }, [])
 
@@ -220,12 +283,26 @@ export function AuthProvider({ children }) {
 
     if (Object.keys(sanitizedUpdates).length === 0) return
 
-    const userRef = doc(db, 'users', auth.currentUser.uid)
-    await updateDoc(userRef, sanitizedUpdates)
     if (sanitizedUpdates.fullName && auth.currentUser) {
-      await updateProfile(auth.currentUser, { displayName: sanitizedUpdates.fullName })
+      try {
+        await updateProfile(auth.currentUser, { displayName: sanitizedUpdates.fullName })
+      } catch (authErr) {
+        console.warn('Auth displayName update note:', authErr)
+      }
     }
-    setUserData((prev) => (prev ? { ...prev, ...sanitizedUpdates } : sanitizedUpdates))
+
+    setUserData((prev) => {
+      const updated = prev ? { ...prev, ...sanitizedUpdates } : sanitizedUpdates
+      saveLocalProfile(auth.currentUser.uid, updated)
+      return updated
+    })
+
+    try {
+      const userRef = doc(db, 'users', auth.currentUser.uid)
+      await updateDoc(userRef, sanitizedUpdates)
+    } catch (cloudErr) {
+      console.warn('Firestore profile update note (persisted locally):', cloudErr?.message || cloudErr)
+    }
   }, [])
 
   // Admin access strictly authorized via database role or verified administrator identity

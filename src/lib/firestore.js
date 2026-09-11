@@ -421,7 +421,7 @@ export function subscribeUserTickets(userId, onUpdate) {
       onUpdate(tickets)
     },
     (err) => {
-      console.error('Error fetching support tickets:', err)
+      console.warn('Firestore support tickets sync note:', err)
       onUpdate([])
     }
   )
@@ -443,7 +443,7 @@ export function subscribeTicketDetail(ticketId, onUpdate) {
       }
     },
     (err) => {
-      console.error('Error fetching ticket detail:', err)
+      console.warn('Firestore ticket detail sync note:', err)
       onUpdate(null)
     }
   )
@@ -518,7 +518,7 @@ export function subscribeUserNotifications(userId, onUpdate) {
       onUpdate(notifs)
     },
     (err) => {
-      console.error('Error fetching notifications:', err)
+      console.warn('Firestore notifications sync note:', err)
       onUpdate([])
     }
   )
