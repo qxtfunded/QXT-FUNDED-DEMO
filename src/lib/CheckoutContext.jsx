@@ -183,7 +183,7 @@ export const CRYPTO_METHODS = [
     name: 'USDT BEP20',
     network: 'BNB Smart Chain (BEP-20)',
     addresses: [
-      '0x9803b6Dd8ACe98D68aE19f07d711Dd66aC4AC47b',
+      '0xddFe4cf18e35Baf826d85383530a07f41BE80773',
     ],
     symbol: 'USDT',
     badge: 'BEP20',
