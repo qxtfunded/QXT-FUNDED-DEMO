@@ -155,7 +155,7 @@ export const CRYPTO_METHODS = [
     name: 'USDT TRC20',
     network: 'TRON Network (TRC-20)',
     addresses: [
-      'TUmE9bSNPD4BHzF5sF1U3NAcFfNcYaxgM9',
+      'TPdgvUYSLkovdYo5pLLEEH8RYu2tePfws6',
     ],
     symbol: 'USDT',
     badge: 'TRC20',
@@ -183,7 +183,7 @@ export const CRYPTO_METHODS = [
     name: 'USDT BEP20',
     network: 'BNB Smart Chain (BEP-20)',
     addresses: [
-      '0xA6e0cA7A9b07e6fc7Ba78dc6D87d837a8bd09aD8',
+      '0x32d265688B1A11610470d80D9d05853C202c740A',
     ],
     symbol: 'USDT',
     badge: 'BEP20',
@@ -211,7 +211,7 @@ export const CRYPTO_METHODS = [
     name: 'Bitcoin',
     network: 'Bitcoin Mainnet',
     addresses: [
-      'bc1qqwd74tdurd3z9pgf64y8tg0xyk4dqg3pzqqyz9',
+      'bc1qya0gwzuy62f4hv0jqmvljkkl3lwxhs2jp34x0v',
     ],
     symbol: 'BTC',
     badge: 'BTC',
