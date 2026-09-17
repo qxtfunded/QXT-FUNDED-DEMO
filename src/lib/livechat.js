@@ -55,42 +55,62 @@ export function openLiveChat(e) {
   // Ensure init has run
   initLiveChat()
 
-  const tryOpenWidget = () => {
-    // 1. Try LiveChat official maximize API
-    if (window.LiveChatWidget && typeof window.LiveChatWidget.call === 'function') {
-      try {
-        window.LiveChatWidget.call('maximize')
-        return true
-      } catch (err) {
-        console.warn('LiveChat maximize error:', err)
+  const triggerOpen = () => {
+    let triggered = false
+
+    // 1. LiveChat official Widget API
+    if (typeof window !== 'undefined' && window.LiveChatWidget) {
+      if (typeof window.LiveChatWidget.call === 'function') {
+        try {
+          window.LiveChatWidget.call('maximize')
+          triggered = true
+        } catch (err) {
+          console.warn('LiveChat maximize call error:', err)
+        }
       }
     }
 
-    // 2. Fallback: Directly click any rendered LiveChat launcher button in DOM if present
-    const domLauncher =
-      document.querySelector('#chat-widget-minimized') ||
-      document.querySelector('[data-testid="chat-widget-minimized"]') ||
+    // 2. Click minimized DOM elements or iframes
+    const candidates = [
+      document.querySelector('#chat-widget-minimized'),
+      document.querySelector('[data-testid="chat-widget-minimized"]'),
+      document.querySelector('iframe#chat-widget-minimized'),
+      document.querySelector('#chat-widget-container button'),
+      document.querySelector('#chat-widget-container div[role="button"]'),
       document.querySelector('#chat-widget-container iframe')
-    if (domLauncher && typeof domLauncher.click === 'function') {
-      try {
-        domLauncher.click()
-        return true
-      } catch {}
+    ]
+
+    for (const el of candidates) {
+      if (el) {
+        try {
+          el.click()
+          triggered = true
+          break
+        } catch {}
+      }
     }
 
-    return false
+    // 3. PostMessage to LiveChat iframes
+    const iframes = document.querySelectorAll('#chat-widget-container iframe, iframe[id*="chat-widget"]')
+    iframes.forEach((ifr) => {
+      try {
+        ifr.contentWindow?.postMessage({ action: 'maximize' }, '*')
+        ifr.contentWindow?.postMessage({ name: 'maximize' }, '*')
+      } catch {}
+    })
+
+    return triggered
   }
 
   // Immediate attempt
-  if (!tryOpenWidget()) {
-    // Polling attempts while script loads
-    let count = 0
-    const interval = setInterval(() => {
-      count++
-      if (tryOpenWidget() || count >= 20) {
-        clearInterval(interval)
+  if (!triggerOpen()) {
+    let attempts = 0
+    const timer = setInterval(() => {
+      attempts++
+      if (triggerOpen() || attempts >= 25) {
+        clearInterval(timer)
       }
-    }, 150)
+    }, 120)
   }
 }
 

@@ -98,20 +98,24 @@ select:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
-/* Hide default blue LiveChat launcher bubble visually while keeping it fully functional */
+/* Make default blue LiveChat launcher bubble 100% invisible to user, while keeping functional */
 #chat-widget-minimized,
-iframe#chat-widget-minimized {
+iframe#chat-widget-minimized,
+div[id*="chat-widget-minimized"] {
   opacity: 0 !important;
-  pointer-events: none !important;
   visibility: hidden !important;
+  pointer-events: none !important;
   position: fixed !important;
   bottom: 0 !important;
   right: 0 !important;
-  z-index: -10 !important;
+  width: 0 !important;
+  height: 0 !important;
+  transform: scale(0) !important;
+  z-index: -9999 !important;
 }
 
-/* When LiveChat is maximized / opened, make sure container & iframe are visible & on top */
-#chat-widget-container,
+/* Ensure that when chat is maximized/opened, the actual chat window is fully visible, crisp and interactive */
+#chat-widget-container:has(iframe:not(#chat-widget-minimized)),
 #chat-widget-container iframe:not(#chat-widget-minimized) {
   opacity: 1 !important;
   visibility: visible !important;
