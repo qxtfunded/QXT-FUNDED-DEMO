@@ -97,3 +97,26 @@ select:focus-visible,
   font-family: 'JetBrains Mono', monospace;
   font-variant-numeric: tabular-nums;
 }
+
+/* Hide default blue LiveChat launcher bubble visually while keeping it fully functional */
+#chat-widget-minimized,
+iframe#chat-widget-minimized {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  z-index: -10 !important;
+}
+
+/* When LiveChat is maximized / opened, make sure container & iframe are visible & on top */
+#chat-widget-container,
+#chat-widget-container iframe:not(#chat-widget-minimized) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  z-index: 2147483647 !important;
+}
+
+

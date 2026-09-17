@@ -1,6 +1,5 @@
 // LiveChat Integration (License: 19942685)
 export const LIVECHAT_LICENSE = 19942685
-export const LIVECHAT_DIRECT_URL = `https://www.livechat.com/chat-with/${LIVECHAT_LICENSE}/`
 
 export function initLiveChat() {
   if (typeof window === 'undefined') return
@@ -39,51 +38,61 @@ export function initLiveChat() {
     window.LiveChatWidget = widget
   }
 
-  window.LiveChatWidget.init()
-
-  // Keep widget ready
-  window.LiveChatWidget.on('ready', () => {
-    try {
-      // Keep widget ready for instant invocation
-    } catch (e) {
-      console.error(e)
-    }
-  })
+  if (typeof window.LiveChatWidget.init === 'function') {
+    window.LiveChatWidget.init()
+  }
 }
 
 /**
- * 1-click instant live chat opener:
- * Opens official LiveChat chat portal directly in a clean dedicated tab
- * so user never experiences lag, stuck scripts, or iframe restrictions,
- * while also triggering the in-page widget if supported.
+ * In-page smooth live chat opener:
+ * Opens the LiveChat widget right inside the website (in-page window/popup)
  */
 export function openLiveChat(e) {
   if (e && typeof e.preventDefault === 'function') {
-    // allow clean execution without event collision
+    e.preventDefault()
   }
 
-  // 1. Instantly open dedicated live chat page in new tab/window without popup blocking
-  try {
-    const chatWindow = window.open(
-      LIVECHAT_DIRECT_URL,
-      '_blank',
-      'noopener,noreferrer'
-    )
-    if (chatWindow) {
-      chatWindow.focus()
-    }
-  } catch (err) {
-    console.warn('Direct chat window open error:', err)
-  }
+  // Ensure init has run
+  initLiveChat()
 
-  // 2. Also initialize and maximize the on-site widget in case user returns to this tab
-  try {
-    initLiveChat()
+  const tryOpenWidget = () => {
+    // 1. Try LiveChat official maximize API
     if (window.LiveChatWidget && typeof window.LiveChatWidget.call === 'function') {
-      window.LiveChatWidget.call('maximize')
+      try {
+        window.LiveChatWidget.call('maximize')
+        return true
+      } catch (err) {
+        console.warn('LiveChat maximize error:', err)
+      }
     }
-  } catch (err) {
-    // Non-blocking
+
+    // 2. Fallback: Directly click any rendered LiveChat launcher button in DOM if present
+    const domLauncher =
+      document.querySelector('#chat-widget-minimized') ||
+      document.querySelector('[data-testid="chat-widget-minimized"]') ||
+      document.querySelector('#chat-widget-container iframe')
+    if (domLauncher && typeof domLauncher.click === 'function') {
+      try {
+        domLauncher.click()
+        return true
+      } catch {}
+    }
+
+    return false
+  }
+
+  // Immediate attempt
+  if (!tryOpenWidget()) {
+    // Polling attempts while script loads
+    let count = 0
+    const interval = setInterval(() => {
+      count++
+      if (tryOpenWidget() || count >= 20) {
+        clearInterval(interval)
+      }
+    }, 150)
   }
 }
+
+
 

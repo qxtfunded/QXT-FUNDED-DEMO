@@ -248,7 +248,6 @@ export function scrubPrivacyAndTrackingCookies() {
           name.startsWith('_gid') ||
           name.startsWith('_gat') ||
           name.startsWith('_gcl') ||
-          name.startsWith('__lc') ||
           name.startsWith('mp_') ||
           name.startsWith('ajs_'))
       ) {

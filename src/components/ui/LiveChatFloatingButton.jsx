@@ -1,39 +1,54 @@
 import { useState, useEffect } from 'react'
 import { MessageSquare } from 'lucide-react'
-import { openLiveChat, LIVECHAT_DIRECT_URL } from '../../lib/livechat'
+import { openLiveChat } from '../../lib/livechat'
 
 export default function LiveChatFloatingButton() {
-  const [isVisible, setIsVisible] = useState(true)
+  const [isChatMaximized, setIsChatMaximized] = useState(false)
 
   // Listen to LiveChatWidget visibility if in-page widget is opened
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.LiveChatWidget) {
-      window.LiveChatWidget.on('visibility_changed', (data) => {
-        if (data && data.visibility === 'maximized') {
-          setIsVisible(false)
-        } else {
-          setIsVisible(true)
+    const attachListener = () => {
+      if (typeof window !== 'undefined' && window.LiveChatWidget && typeof window.LiveChatWidget.on === 'function') {
+        window.LiveChatWidget.on('visibility_changed', (data) => {
+          if (data && data.visibility === 'maximized') {
+            setIsChatMaximized(true)
+          } else {
+            setIsChatMaximized(false)
+          }
+        })
+        return true
+      }
+      return false
+    }
+
+    if (!attachListener()) {
+      const timer = setInterval(() => {
+        if (attachListener()) {
+          clearInterval(timer)
         }
-      })
+      }, 300)
+      return () => clearInterval(timer)
     }
   }, [])
 
-  if (!isVisible) return null
+  const handleClick = (e) => {
+    openLiveChat(e)
+  }
 
   return (
     <div
       id="qxt-floating-livechat-container"
-      className="fixed bottom-16 sm:bottom-6 right-4 sm:right-6 z-40 flex items-center gap-3 animate-fade-in print:hidden"
+      className={`fixed bottom-16 sm:bottom-6 right-4 sm:right-6 z-40 flex items-center gap-3 animate-fade-in print:hidden ${
+        isChatMaximized ? 'opacity-0 pointer-events-none scale-0' : 'opacity-100'
+      }`}
     >
-      {/* Direct 1-Click Native Link with JS Enhancement */}
-      <a
+      {/* Button to open chat right inside website */}
+      <button
         id="qxt-livechat-trigger"
-        href={LIVECHAT_DIRECT_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={openLiveChat}
+        type="button"
+        onClick={handleClick}
         aria-label="Open 24/7 Live Support Chat"
-        className="group relative flex items-center gap-3 rounded-full bg-gradient-to-r from-ink-900 via-ink-850 to-ink-900 py-3 px-4.5 text-paper-100 shadow-2xl border border-gold-500/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-gold-400 hover:shadow-[0_0_25px_rgba(234,179,8,0.25)] active:scale-95 cursor-pointer no-underline"
+        className="group relative flex items-center gap-3 rounded-full bg-gradient-to-r from-ink-900 via-ink-850 to-ink-900 py-3 px-4.5 text-paper-100 shadow-2xl border border-gold-500/30 backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-gold-400 hover:shadow-[0_0_25px_rgba(234,179,8,0.25)] active:scale-95 cursor-pointer text-left"
       >
         {/* Glow effect */}
         <span className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-gold-500/20 via-mint-500/10 to-gold-500/20 opacity-0 blur transition duration-300 group-hover:opacity-100 pointer-events-none" />
@@ -48,7 +63,7 @@ export default function LiveChatFloatingButton() {
         </div>
 
         {/* Text Details */}
-        <div className="flex flex-col text-left pointer-events-none">
+        <div className="flex flex-col text-left pointer-events-none select-none">
           <span className="text-xs font-bold text-paper-100 group-hover:text-gold-300 transition-colors">
             24/7 Live Chat
           </span>
@@ -57,8 +72,10 @@ export default function LiveChatFloatingButton() {
             Online Support
           </span>
         </div>
-      </a>
+      </button>
     </div>
   )
 }
+
+
 
