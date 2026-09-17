@@ -1,5 +1,6 @@
 // LiveChat Integration (License: 19942685)
 export const LIVECHAT_LICENSE = 19942685
+export const LIVECHAT_DIRECT_URL = `https://www.livechat.com/chat-with/${LIVECHAT_LICENSE}/`
 
 export function initLiveChat() {
   if (typeof window === 'undefined') return
@@ -40,39 +41,49 @@ export function initLiveChat() {
 
   window.LiveChatWidget.init()
 
-  // Always hide the default blue bubble launcher to keep only the custom QXT UI widget
+  // Keep widget ready
   window.LiveChatWidget.on('ready', () => {
     try {
-      window.LiveChatWidget.call('hide')
+      // Keep widget ready for instant invocation
     } catch (e) {
       console.error(e)
     }
   })
-
-  window.LiveChatWidget.on('visibility_changed', (data) => {
-    if (data && (data.visibility === 'minimized' || data.visibility === 'hidden')) {
-      try {
-        window.LiveChatWidget.call('hide')
-      } catch (e) {
-        console.error(e)
-      }
-    }
-  })
 }
 
-export function openLiveChat() {
-  initLiveChat()
-
-  if (window.LiveChatWidget && typeof window.LiveChatWidget.call === 'function') {
-    try {
-      window.LiveChatWidget.call('maximize')
-      return
-    } catch (err) {
-      console.warn('LiveChat maximize call failed, falling back to direct URL:', err)
-    }
+/**
+ * 1-click instant live chat opener:
+ * Opens official LiveChat chat portal directly in a clean dedicated tab
+ * so user never experiences lag, stuck scripts, or iframe restrictions,
+ * while also triggering the in-page widget if supported.
+ */
+export function openLiveChat(e) {
+  if (e && typeof e.preventDefault === 'function') {
+    // allow clean execution without event collision
   }
 
-  // Fallback to official LiveChat web window
-  window.open(`https://www.livechat.com/chat-with/${LIVECHAT_LICENSE}/`, '_blank', 'noopener,noreferrer')
+  // 1. Instantly open dedicated live chat page in new tab/window without popup blocking
+  try {
+    const chatWindow = window.open(
+      LIVECHAT_DIRECT_URL,
+      '_blank',
+      'noopener,noreferrer'
+    )
+    if (chatWindow) {
+      chatWindow.focus()
+    }
+  } catch (err) {
+    console.warn('Direct chat window open error:', err)
+  }
+
+  // 2. Also initialize and maximize the on-site widget in case user returns to this tab
+  try {
+    initLiveChat()
+    if (window.LiveChatWidget && typeof window.LiveChatWidget.call === 'function') {
+      window.LiveChatWidget.call('maximize')
+    }
+  } catch (err) {
+    // Non-blocking
+  }
 }
 

@@ -5,7 +5,7 @@ import { Card, Badge } from '../../components/ui/Primitives'
 import Button from '../../components/ui/Button'
 import { useAuth } from '../../lib/AuthContext'
 import { subscribeUserTickets } from '../../lib/firestore'
-import { openLiveChat } from '../../lib/livechat'
+import { openLiveChat, LIVECHAT_DIRECT_URL } from '../../lib/livechat'
 
 const ticketStatusMeta = {
   Open: { label: 'Open', tone: 'gold' },
@@ -40,7 +40,13 @@ export default function SupportList() {
           <p className="mt-1 text-sm text-paper-400">Get help from our team, 24/7.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button onClick={openLiveChat} variant="primary">
+          <Button
+            href={LIVECHAT_DIRECT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={openLiveChat}
+            variant="primary"
+          >
             <MessageSquareCode size={16} /> Live Chat
           </Button>
           <Button to="/dashboard/support/new" variant="outline">

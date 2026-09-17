@@ -2,7 +2,7 @@ import { LifeBuoy, MessageCircle, Mail, ArrowRight, MessageSquareCode } from 'lu
 import { Eyebrow, Section, Card } from '../components/ui/Primitives'
 import Button from '../components/ui/Button'
 import { faqs } from '../data/content'
-import { openLiveChat } from '../lib/livechat'
+import { openLiveChat, LIVECHAT_DIRECT_URL } from '../lib/livechat'
 
 export default function Support() {
   return (
@@ -33,7 +33,15 @@ export default function Support() {
             <p className="mt-2 text-sm text-paper-400">
               Connect instantly with our support team in real-time 24/7.
             </p>
-            <Button onClick={openLiveChat} variant="primary" size="sm" className="mt-5 w-full">
+            <Button
+              href={LIVECHAT_DIRECT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={openLiveChat}
+              variant="primary"
+              size="sm"
+              className="mt-5 w-full"
+            >
               Start Live Chat <ArrowRight size={14} />
             </Button>
           </Card>
