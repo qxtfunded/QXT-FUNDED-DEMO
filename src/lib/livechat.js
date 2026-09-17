@@ -1,5 +1,5 @@
-// LiveChat Integration (License: 19933120)
-export const LIVECHAT_LICENSE = 19933120
+// LiveChat Integration (License: 19942685)
+export const LIVECHAT_LICENSE = 19942685
 
 export function initLiveChat() {
   if (typeof window === 'undefined') return

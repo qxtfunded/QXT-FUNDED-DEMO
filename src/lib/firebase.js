@@ -30,13 +30,13 @@ export const db = firestoreDb
 export const storage = getStorage(app)
 export const googleProvider = new GoogleAuthProvider()
 
-// Proactively scrub tracking cookies & sanitize telemetry
+// Proactively scrub analytics cookies & sanitize telemetry
 if (typeof document !== 'undefined') {
   try {
     const rawCookies = document.cookie ? document.cookie.split(';') : []
     for (const c of rawCookies) {
       const name = c.split('=')[0]?.trim()
-      if (name && (name.startsWith('_ga') || name.startsWith('_gid') || name.startsWith('_gat') || name.startsWith('__lc'))) {
+      if (name && (name.startsWith('_ga') || name.startsWith('_gid') || name.startsWith('_gat'))) {
         document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Strict;Secure`
       }
     }
