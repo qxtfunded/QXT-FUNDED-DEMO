@@ -4,4 +4,4 @@ Disallow: /dashboard/
 Disallow: /checkout/
 Disallow: /verify-email
 
-Sitemap: https://qxtfunded.com/sitemap.xml
+Sitemap: https://qxtfunded.org/sitemap.xml

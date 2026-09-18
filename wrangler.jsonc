@@ -3,8 +3,8 @@
   "name": "qxt-funded",
   "compatibility_date": "2026-08-07",
   "routes": [
-    { "pattern": "qxtfunded.com", "custom_domain": true },
-    { "pattern": "www.qxtfunded.com", "custom_domain": true }
+    { "pattern": "qxtfunded.org", "custom_domain": true },
+    { "pattern": "www.qxtfunded.org", "custom_domain": true }
   ],
   "assets": {
     "directory": "./dist",

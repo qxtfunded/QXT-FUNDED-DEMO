@@ -72,8 +72,8 @@ export default function Support() {
             <p className="mt-2 text-sm text-paper-400">
               Reach our support team directly via email anytime.
             </p>
-            <Button href="mailto:support@qxtfunded.com" variant="outline" size="sm" className="mt-5 w-full">
-              support@qxtfunded.com
+            <Button href="mailto:support@qxtfunded.org" variant="outline" size="sm" className="mt-5 w-full">
+              support@qxtfunded.org
             </Button>
           </Card>
         </div>
