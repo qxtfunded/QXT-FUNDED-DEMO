@@ -1,6 +1,11 @@
 import { initializeApp, getApps, getApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
-import { initializeFirestore, getFirestore } from 'firebase/firestore'
+import {
+  initializeFirestore,
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 // Firebase Configuration (Strict Zero-Telemetry Privacy Mode)
@@ -20,6 +25,9 @@ export const auth = getAuth(app)
 let firestoreDb
 try {
   firestoreDb = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    }),
     experimentalAutoDetectLongPolling: true,
   })
 } catch (e) {
@@ -75,8 +83,14 @@ export function handleFirestoreError(error, operationType, path) {
     path
   }
 
-  if (errCode === 'unavailable' || errCode === 'failed-precondition' || errMsg.includes('could not be completed')) {
-    console.warn('Firestore transient connectivity notice:', JSON.stringify(errInfo))
+  if (
+    errCode === 'unavailable' ||
+    errCode === 'failed-precondition' ||
+    errMsg.includes('could not be completed') ||
+    errMsg.includes('Could not reach Cloud Firestore backend') ||
+    errMsg.includes('offline mode')
+  ) {
+    console.warn('Firestore operating in resilient offline mode:', errCode || errMsg)
     return null
   }
 
