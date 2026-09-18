@@ -4,13 +4,19 @@ export const LIVECHAT_LICENSE = 19942685
 export function initLiveChat() {
   if (typeof window === 'undefined') return
 
-  if (window.__lc_initialized) return
-  window.__lc_initialized = true
-
   window.__lc = window.__lc || {}
   window.__lc.license = LIVECHAT_LICENSE
   window.__lc.integration_name = "manual_channels"
   window.__lc.product_name = "livechat"
+
+  // Ensure script is injected if not already present
+  if (!document.querySelector('script[src*="livechatinc.com/tracking.js"]')) {
+    const script = document.createElement('script')
+    script.async = true
+    script.type = 'text/javascript'
+    script.src = 'https://cdn.livechatinc.com/tracking.js'
+    document.head.appendChild(script)
+  }
 
   if (!window.LiveChatWidget) {
     const queue = []
@@ -28,18 +34,16 @@ export function initLiveChat() {
       },
       call: function() { queue.push(['call', [].slice.call(arguments)]) },
       init: function() {
-        const script = document.createElement('script')
-        script.async = true
-        script.type = 'text/javascript'
-        script.src = 'https://cdn.livechatinc.com/tracking.js'
-        document.head.appendChild(script)
+        if (!document.querySelector('script[src*="livechatinc.com/tracking.js"]')) {
+          const s = document.createElement('script')
+          s.async = true
+          s.type = 'text/javascript'
+          s.src = 'https://cdn.livechatinc.com/tracking.js'
+          document.head.appendChild(s)
+        }
       }
     }
     window.LiveChatWidget = widget
-  }
-
-  if (typeof window.LiveChatWidget.init === 'function') {
-    window.LiveChatWidget.init()
   }
 }
 
@@ -107,16 +111,13 @@ export function openLiveChat(e) {
     let attempts = 0
     const timer = setInterval(() => {
       attempts++
-      if (triggerOpen() || attempts >= 25) {
+      if (triggerOpen() || attempts >= 20) {
         clearInterval(timer)
-        // Ultimate resilient fallback if browser adblocker or strict security blocked widget completely:
-        if (!triggerOpen() && attempts >= 25) {
-          window.open(`https://www.livechat.com/chat-with/${LIVECHAT_LICENSE}/`, '_blank', 'noopener,noreferrer')
-        }
       }
-    }, 120)
+    }, 100)
   }
 }
+
 
 
 
