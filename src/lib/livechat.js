@@ -109,6 +109,10 @@ export function openLiveChat(e) {
       attempts++
       if (triggerOpen() || attempts >= 25) {
         clearInterval(timer)
+        // Ultimate resilient fallback if browser adblocker or strict security blocked widget completely:
+        if (!triggerOpen() && attempts >= 25) {
+          window.open(`https://www.livechat.com/chat-with/${LIVECHAT_LICENSE}/`, '_blank', 'noopener,noreferrer')
+        }
       }
     }, 120)
   }
