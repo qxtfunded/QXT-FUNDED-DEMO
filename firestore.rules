@@ -1,0 +1,131 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        (request.auth.token.email != null && request.auth.token.email.lower() == 'qxtfunded1@gmail.com')
+      );
+    }
+
+    // User profiles: strictly protect sensitive fields from client tampering
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // User can only create their own profile or administrator profile
+      allow create: if isOwner(userId) || isAdmin();
+
+      // User cannot elevate their own role, change wallet balance, unblock themselves, or change status
+      allow update: if isAdmin() || (
+        isOwner(userId) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'role',
+          'walletBalance',
+          'isBlocked',
+          'accountStatus',
+          'status'
+        ])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // Orders: authenticated users can only view their own orders and create Pending orders
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && (
+        resource == null ||
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+
+      // Require authentication and matching UID; price and size must be positive numbers; initial status must be Pending
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.status in ['Pending', 'Processing'] &&
+        request.resource.data.price is number &&
+        request.resource.data.price > 0 &&
+        request.resource.data.size is number &&
+        request.resource.data.size > 0;
+
+      // Regular user cannot change order financial parameters or self-approve to Completed
+      allow update: if isAdmin() || (
+        isAuthenticated() &&
+        resource.data.userId == request.auth.uid &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['price', 'size', 'userId', 'orderNumber', 'createdAt']) &&
+        (request.resource.data.status == resource.data.status || request.resource.data.status == 'Rejected')
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // Support tickets: private to user and administrative staff
+    match /supportTickets/{ticketId} {
+      allow read: if isAuthenticated() && (
+        resource == null ||
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.subject is string &&
+        request.resource.data.subject.size() <= 200 &&
+        request.resource.data.status in ['Open', 'Waiting Reply'];
+
+      allow update: if isAdmin() || (
+        isAuthenticated() &&
+        resource.data.userId == request.auth.uid &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['userId', 'ticketNumber', 'createdAt'])
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // Notifications: strictly scoped to recipient
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && (
+        resource == null ||
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+
+      allow create: if isAdmin() || (
+        isAuthenticated() && request.resource.data.userId == request.auth.uid
+      );
+
+      allow update, delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+    }
+
+    // Activity logs: fix IDOR leak so users can only access their own logs
+    match /activityLogs/{logId} {
+      allow read: if isAuthenticated() && (
+        resource == null ||
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+
+      allow create: if isAuthenticated() && (
+        request.resource.data.userId == request.auth.uid
+      );
+
+      allow update, delete: if isAdmin();
+    }
+
+    // Sequential counters: authenticated system access only
+    match /counters/{counterId} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

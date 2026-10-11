@@ -1,15 +1,30 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import fs from 'node:fs'
+import path from 'node:path'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 3000,
-    host: '0.0.0.0',
+  plugins: [
+    react(),
+    {
+      name: 'copy-404',
+      closeBundle() {
+        try {
+          const distIndex = path.resolve(__dirname, 'dist/index.html')
+          const dist404 = path.resolve(__dirname, 'dist/404.html')
+          if (fs.existsSync(distIndex)) {
+            fs.copyFileSync(distIndex, dist404)
+          }
+        } catch (e) {
+          console.error('Failed to copy 404.html:', e)
+        }
+      },
+    },
+  ],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
   },
-  preview: {
-    port: 3000,
-    host: '0.0.0.0',
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
   },
-});
+})

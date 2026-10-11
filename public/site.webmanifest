@@ -1,0 +1,26 @@
+{
+  "name": "QXT Funded",
+  "short_name": "QXT Funded",
+  "description": "Prove Your Edge. Get Funded.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06090e",
+  "theme_color": "#06090e",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

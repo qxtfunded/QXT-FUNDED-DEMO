@@ -1,302 +1,373 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
+import { instantPlans, challengePlans } from '../data/accounts'
+import { useAuth } from './AuthContext'
 
-const CheckoutContext = createContext();
+export const BROKERS = [
+  {
+    id: 'pocketOption',
+    name: 'Pocket Option',
+    logoUrl: '/brokers/pocketoption.png',
+    fallbackUrl: 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png',
+    desc: 'Top-rated broker with flexible options trade modes and premium liquidity levels.',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/brokers/pocketoption.png"
+          alt="Pocket Option"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png') {
+              e.currentTarget.src = 'https://i.ibb.co/4RWf6GPR/Pocket-Option-logo-PNG1.png'
+            }
+          }}
+        />
+      </div>
+    ),
+  },
+  {
+    id: 'quotex',
+    name: 'Quotex',
+    logoUrl: '/brokers/quotex.png',
+    fallbackUrl: 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png',
+    desc: 'Highly customizable UI and perfect modern trading interface for active clients.',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/brokers/quotex.png"
+          alt="Quotex"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png') {
+              e.currentTarget.src = 'https://i.ibb.co/XxgfVcbP/quotex-io-seeklogo.png'
+            }
+          }}
+        />
+      </div>
+    ),
+  },
+  {
+    id: 'binomo',
+    name: 'Binomo',
+    logoUrl: '/brokers/binomo.png',
+    fallbackUrl: 'https://i.ibb.co/kCCmxZ7/binomo-logo.png',
+    desc: 'Robust and steady execution speed, excellent for scalping models and rapid entries.',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/brokers/binomo.png"
+          alt="Binomo"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/kCCmxZ7/binomo-logo.png') {
+              e.currentTarget.src = 'https://i.ibb.co/kCCmxZ7/binomo-logo.png'
+            }
+          }}
+        />
+      </div>
+    ),
+  },
+  {
+    id: 'olympTrade',
+    name: 'Olymp Trade',
+    logoUrl: '/brokers/olymptrade.png',
+    fallbackUrl: 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png',
+    desc: 'Multi-market broker with deep indicators selection and lightning fast fills.',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/brokers/olymptrade.png"
+          alt="Olymp Trade"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png') {
+              e.currentTarget.src = 'https://i.ibb.co/FqDRTqx1/toppng-com-olymp-trade-transparent-logo-png-5000x5113.png'
+            }
+          }}
+        />
+      </div>
+    ),
+  },
+  {
+    id: 'tradowix',
+    name: 'Tradowix',
+    logoUrl: '/brokers/tradowix.jpg',
+    fallbackUrl: 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg',
+    desc: 'Premium trading infrastructure with institutional grade speed.',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/brokers/tradowix.jpg"
+          alt="Tradowix"
+          className="h-full w-full object-contain rounded-lg"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg') {
+              e.currentTarget.src = 'https://i.ibb.co/23dgStg7/Trado-Wix-logo.jpg'
+            }
+          }}
+        />
+      </div>
+    ),
+  },
+]
 
 export const CRYPTO_METHODS = [
   {
-    id: 'USDT TRC20',
-    name: 'USDT TRC-20',
-    network: 'Tron Network (TRC-20)',
-    addresses: ['TW1Cd8GLzobCan1F5Eg15kH8qchs6tbzDY'],
+    id: 'USDT ERC20',
+    name: 'USDT ERC20',
+    network: 'Ethereum Network (ERC-20)',
+    addresses: [
+      '0xa8073047789Ff3cdb6F41926153eB775f83d2609',
+    ],
     symbol: 'USDT',
-    badge: 'Fast & Low Fee',
-    networkFee: '~1.5 USDT',
-    confirmations: '1 Confirmation (~2 mins)',
-    color: 'from-emerald-500 to-teal-600',
+    badge: 'ERC20',
+    logoUrl: '/crypto/usdt.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/crypto/usdt.png"
+          alt="USDT ERC20"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png'
+            }
+          }}
+        />
+      </div>
+    ),
+  },
+  {
+    id: 'USDT TRC20',
+    name: 'USDT TRC20',
+    network: 'TRON Network (TRC-20)',
+    addresses: [
+      'TQMEndNpmtZAfcF7DfaHx9UkSysBQZDAxd',
+    ],
+    symbol: 'USDT',
+    badge: 'TRC20',
+    logoUrl: '/crypto/usdt.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/crypto/usdt.png"
+          alt="USDT TRC20"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png'
+            }
+          }}
+        />
+      </div>
+    ),
   },
   {
     id: 'USDT BEP20',
-    name: 'USDT BEP-20',
+    name: 'USDT BEP20',
     network: 'BNB Smart Chain (BEP-20)',
-    addresses: ['0xB52cC0d200DB2eA47BF46a3585AeF2a0f4deEA7a'],
+    addresses: [
+      '0xa8073047789Ff3cdb6F41926153eB775f83d2609',
+    ],
     symbol: 'USDT',
-    badge: 'Lowest Gas Fee',
-    networkFee: '~0.29 USDT',
-    confirmations: '15 Confirmations (~1 min)',
-    color: 'from-amber-500 to-yellow-600',
+    badge: 'BEP20',
+    logoUrl: '/crypto/usdt.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/crypto/usdt.png"
+          alt="USDT BEP20"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/usdt.png'
+            }
+          }}
+        />
+      </div>
+    ),
   },
   {
-    id: 'USDT ERC20',
-    name: 'USDT ERC-20',
-    network: 'Ethereum Network (ERC-20)',
-    addresses: ['0xB52cC0d200DB2eA47BF46a3585AeF2a0f4deEA7a'],
-    symbol: 'USDT',
-    badge: 'Standard Ethereum',
-    networkFee: 'Variable Gas',
-    confirmations: '12 Confirmations (~3 mins)',
-    color: 'from-blue-500 to-indigo-600',
-  },
-  {
-    id: 'BTC',
-    name: 'Bitcoin (BTC)',
-    network: 'Bitcoin Native (SegWit)',
-    addresses: ['bc1qmg0zwf7grl9djzsr3hcgvdr3lc2tjsk46jpayw'],
+    id: 'Bitcoin',
+    name: 'Bitcoin',
+    network: 'Bitcoin Mainnet',
+    addresses: [
+      'bc1qmmckgcwyrkyuxr7qhu5a38hc69cde33rsscpqj',
+    ],
     symbol: 'BTC',
-    badge: 'Native SegWit',
-    networkFee: 'Standard Mempool',
-    confirmations: '2 Confirmations (~15 mins)',
-    color: 'from-orange-500 to-amber-600',
+    badge: 'BTC',
+    logoUrl: '/crypto/btc.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/crypto/btc.png"
+          alt="Bitcoin"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/btc.png'
+            }
+          }}
+        />
+      </div>
+    ),
   },
   {
-    id: 'ETH',
-    name: 'Ethereum (ETH)',
-    network: 'Ethereum Mainnet (ERC-20)',
-    addresses: ['0xB52cC0d200DB2eA47BF46a3585AeF2a0f4deEA7a'],
+    id: 'Ethereum',
+    name: 'Ethereum',
+    network: 'Ethereum Mainnet',
+    addresses: [
+      '0xa8073047789Ff3cdb6F41926153eB775f83d2609',
+    ],
     symbol: 'ETH',
-    badge: 'Direct Native ETH',
-    networkFee: 'Standard Gas',
-    confirmations: '12 Confirmations (~3 mins)',
-    color: 'from-purple-500 to-indigo-600',
-  }
-];
+    badge: 'ETH',
+    logoUrl: '/crypto/eth.png',
+    fallbackUrl: 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png',
+    logo: (
+      <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-ink-800/90 p-1.5 shadow-md border border-white/10 overflow-hidden">
+        <img
+          src="/crypto/eth.png"
+          alt="Ethereum"
+          className="h-full w-full object-contain"
+          loading="eager"
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            if (e.currentTarget.src !== 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png') {
+              e.currentTarget.src = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/128/color/eth.png'
+            }
+          }}
+        />
+      </div>
+    ),
+  },
+]
 
-export const PLANS_DATA = [
-  {
-    id: '10k',
-    name: '$10,000 Challenge',
-    capital: '$10,000',
-    numericCapital: 10000,
-    price: 95,
-    discountPrice: 85,
-    profitTarget: '$800 (8%)',
-    dailyLoss: '$500 (5%)',
-    maxDrawdown: '$1,000 (10%)',
-    minTradingDays: '3 Days',
-    leverage: '1:100',
-    profitSplit: '90%',
-    badge: 'Starter Choice',
-    popular: false,
-  },
-  {
-    id: '25k',
-    name: '$25,000 Challenge',
-    capital: '$25,000',
-    numericCapital: 25000,
-    price: 199,
-    discountPrice: 179,
-    profitTarget: '$2,000 (8%)',
-    dailyLoss: '$1,250 (5%)',
-    maxDrawdown: '$2,500 (10%)',
-    minTradingDays: '3 Days',
-    leverage: '1:100',
-    profitSplit: '90%',
-    badge: 'High Value',
-    popular: false,
-  },
-  {
-    id: '50k',
-    name: '$50,000 Challenge',
-    capital: '$50,000',
-    numericCapital: 50000,
-    price: 320,
-    discountPrice: 289,
-    profitTarget: '$4,000 (8%)',
-    dailyLoss: '$2,500 (5%)',
-    maxDrawdown: '$5,000 (10%)',
-    minTradingDays: '3 Days',
-    leverage: '1:100',
-    profitSplit: '90%',
-    badge: 'Most Popular',
-    popular: true,
-  },
-  {
-    id: '100k',
-    name: '$100,000 Challenge',
-    capital: '$100,000',
-    numericCapital: 100000,
-    price: 549,
-    discountPrice: 499,
-    profitTarget: '$8,000 (8%)',
-    dailyLoss: '$5,000 (5%)',
-    maxDrawdown: '$10,000 (10%)',
-    minTradingDays: '3 Days',
-    leverage: '1:100',
-    profitSplit: '90%',
-    badge: 'Pro Trader',
-    popular: false,
-  },
-  {
-    id: '200k',
-    name: '$200,000 Challenge',
-    capital: '$200,000',
-    numericCapital: 200000,
-    price: 999,
-    discountPrice: 899,
-    profitTarget: '$16,000 (8%)',
-    dailyLoss: '$10,000 (5%)',
-    maxDrawdown: '$20,000 (10%)',
-    minTradingDays: '3 Days',
-    leverage: '1:100',
-    profitSplit: '90%',
-    badge: 'Elite Whale',
-    popular: false,
-  }
-];
-
-export const BROKERS_DATA = [
-  { id: 'quotex', name: 'Quotex', description: 'Instant execution, 98% payout rate, OTC markets & zero slippage', icon: '⚡' },
-  { id: 'pocketoption', name: 'Pocket Option', description: 'Social trading, 100+ currency pairs, fast crypto withdrawals', icon: '🚀' },
-  { id: 'binomo', name: 'Binomo', description: 'Certified financial commission broker with tournament access', icon: '💎' },
-  { id: 'olymptrade', name: 'Olymp Trade', description: 'Regulated broker with intuitive interface and fixed time trades', icon: '🎯' },
-  { id: 'tradowix', name: 'Tradowix', description: 'Ultra-low spreads, institutional liquidity & raw binary feeds', icon: '🔥' },
-  { id: 'mt5', name: 'MetaTrader 5 / Raw Forex', description: 'Tier 1 Prime liquidity, ECN spreads from 0.0 pips', icon: '📊' }
-];
+const CheckoutContext = createContext(null)
 
 export function CheckoutProvider({ children }) {
-  const [selectedPlan, setSelectedPlan] = useState(PLANS_DATA[2]); // Default 50k
-  const [selectedBroker, setSelectedBroker] = useState(BROKERS_DATA[0]);
-  const [evaluationType, setEvaluationType] = useState('2-step'); // '1-step' | '2-step' | 'instant'
-  const [platformOption, setPlatformOption] = useState('Web & Mobile');
-  const [selectedCrypto, setSelectedCrypto] = useState(CRYPTO_METHODS[0]);
-  
-  const [customerDetails, setCustomerDetails] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    country: 'United States',
-    discordUsername: '',
-    agreementAccepted: true,
-  });
-
-  const [activeStep, setActiveStep] = useState(1);
-  const [promoCode, setPromoCode] = useState('EDGE10');
-  const [discountPercent, setDiscountPercent] = useState(10);
-  const [promoApplied, setPromoApplied] = useState(true);
-
-  const [orderHistory, setOrderHistory] = useState(() => {
+  const location = useLocation()
+  const planParam = useMemo(() => {
     try {
-      const saved = localStorage.getItem('qxt_orders');
-      if (saved) return JSON.parse(saved);
+      const sp = new URLSearchParams(location?.search || '')
+      return sp.get('plan') || 'instant-3000'
     } catch {
-      // ignore
+      return 'instant-3000'
     }
-    return [
-      {
-        orderId: 'QXT-784920',
-        date: '2026-10-09',
-        plan: '$50,000 Challenge',
-        capital: '$50,000',
-        broker: 'Quotex',
-        evaluationType: '2-Step Evaluation',
-        cryptoMethod: 'USDT TRC-20',
-        amountPaid: '$289.00',
-        status: 'Active',
-        phase: 'Phase 1 (Target: $4,000)',
-        currentEquity: '$52,140.00',
-        profit: '+$2,140.00 (+4.28%)',
-        loginId: 'QX-9928114',
-        server: 'QXT-Live-Europe'
-      }
-    ];
-  });
+  }, [location?.search])
+  const { user, userData } = useAuth()
+  const [, size] = planParam.split('-')
+  const allPlans = [...instantPlans, ...challengePlans]
+  const plan =
+    allPlans.find((p) => `${p.type}-${p.size}` === planParam) ||
+    allPlans.find((p) => p.size === Number(size)) ||
+    instantPlans[0]
 
-  const [latestOrder, setLatestOrder] = useState(null);
+  const [fullname, setFullname] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [country, setCountry] = useState('')
+  const [address, setAddress] = useState('')
+  const [city, setCity] = useState('')
+  const [broker, setBroker] = useState('Pocket Option')
+  const [selectedMethodId, setSelectedMethodId] = useState('USDT TRC20')
+  const [coupon, setCoupon] = useState('')
+  const [couponApplied, setCouponApplied] = useState(false)
+  const [agreed, setAgreed] = useState(false)
+
+  // Randomly select one of the two addresses for each network per checkout session
+  const [assignedAddresses] = useState(() => {
+    const map = {}
+    CRYPTO_METHODS.forEach((m) => {
+      if (m.addresses && m.addresses.length > 0) {
+        const randomIndex = Math.floor(Math.random() * m.addresses.length)
+        map[m.id] = m.addresses[randomIndex]
+      } else {
+        map[m.id] = m.address || ''
+      }
+    })
+    return map
+  })
 
   useEffect(() => {
-    try {
-      localStorage.setItem('qxt_orders', JSON.stringify(orderHistory));
-    } catch {
-      // ignore
+    if (userData) {
+      if (userData.fullName && !fullname) setFullname(userData.fullName)
+      if (userData.email && !email) setEmail(userData.email)
+      if (userData.phone && !phone) setPhone(userData.phone)
+      if (userData.country && !country) setCountry(userData.country)
+    } else if (user) {
+      if (user.displayName && !fullname) setFullname(user.displayName)
+      if (user.email && !email) setEmail(user.email)
     }
-  }, [orderHistory]);
+  }, [user, userData])
 
-  const applyPromo = (code) => {
-    if (code.trim().toUpperCase() === 'EDGE10' || code.trim().toUpperCase() === 'QXT10') {
-      setPromoCode(code.trim().toUpperCase());
-      setDiscountPercent(10);
-      setPromoApplied(true);
-      return { success: true, message: 'Coupon applied! 10% discount added.' };
-    } else if (code.trim().toUpperCase() === 'VIP20') {
-      setPromoCode(code.trim().toUpperCase());
-      setDiscountPercent(20);
-      setPromoApplied(true);
-      return { success: true, message: 'VIP Promo applied! 20% discount added.' };
-    }
-    return { success: false, message: 'Invalid or expired coupon code.' };
-  };
+  const baseMethod = CRYPTO_METHODS.find((m) => m.id === selectedMethodId) || CRYPTO_METHODS[0]
+  const selectedMethod = {
+    ...baseMethod,
+    address: assignedAddresses[baseMethod.id] || baseMethod.addresses?.[0] || '',
+  }
+  const discount = couponApplied ? Math.round(plan.price * 0.1) : 0
+  const total = plan.price - discount
 
-  const calculateFinalPrice = () => {
-    const base = selectedPlan.price;
-    if (!promoApplied) return base;
-    return Math.round(base * (1 - discountPercent / 100));
-  };
+  const value = {
+    plan,
+    planParam,
+    fullname,
+    setFullname,
+    email,
+    setEmail,
+    phone,
+    setPhone,
+    country,
+    setCountry,
+    address,
+    setAddress,
+    city,
+    setCity,
+    broker,
+    setBroker,
+    selectedMethodId,
+    setSelectedMethodId,
+    selectedMethod,
+    coupon,
+    setCoupon,
+    couponApplied,
+    setCouponApplied,
+    agreed,
+    setAgreed,
+    discount,
+    total,
+    user,
+  }
 
-  const createOrder = (txHash, proofFile = null) => {
-    const orderId = `QXT-${Math.floor(100000 + Math.random() * 900000)}`;
-    const finalPrice = calculateFinalPrice();
-    const newOrder = {
-      orderId,
-      date: new Date().toISOString().split('T')[0],
-      timestamp: new Date().toLocaleString(),
-      plan: selectedPlan.name,
-      capital: selectedPlan.capital,
-      broker: selectedBroker.name,
-      evaluationType: evaluationType === 'instant' ? 'Instant Funded' : evaluationType === '1-step' ? '1-Step Speedy' : '2-Step Standard',
-      cryptoMethod: selectedCrypto.name,
-      walletAddress: selectedCrypto.addresses[0],
-      amountPaid: `$${finalPrice}.00`,
-      customer: customerDetails,
-      txHash: txHash || `0x${Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('')}`,
-      proofUploaded: !!proofFile,
-      status: 'Pending Verification',
-      phase: 'Phase 1 - Awaiting Crypto Confirmation',
-      currentEquity: selectedPlan.capital,
-      profit: '$0.00',
-      loginId: `QX-${Math.floor(1000000 + Math.random() * 9000000)}`,
-      server: 'QXT-Live-Global'
-    };
-
-    setLatestOrder(newOrder);
-    setOrderHistory(prev => [newOrder, ...prev]);
-    return newOrder;
-  };
-
-  return (
-    <CheckoutContext.Provider value={{
-      selectedPlan,
-      setSelectedPlan,
-      selectedBroker,
-      setSelectedBroker,
-      evaluationType,
-      setEvaluationType,
-      platformOption,
-      setPlatformOption,
-      selectedCrypto,
-      setSelectedCrypto,
-      customerDetails,
-      setCustomerDetails,
-      activeStep,
-      setActiveStep,
-      promoCode,
-      setPromoCode,
-      discountPercent,
-      promoApplied,
-      applyPromo,
-      calculateFinalPrice,
-      orderHistory,
-      latestOrder,
-      createOrder,
-    }}>
-      {children}
-    </CheckoutContext.Provider>
-  );
+  return <CheckoutContext.Provider value={value}>{children}</CheckoutContext.Provider>
 }
 
 export function useCheckout() {
-  const context = useContext(CheckoutContext);
+  const context = useContext(CheckoutContext)
   if (!context) {
-    throw new Error('useCheckout must be used within a CheckoutProvider');
+    throw new Error('useCheckout must be used within a CheckoutProvider')
   }
-  return context;
+  return context
 }
