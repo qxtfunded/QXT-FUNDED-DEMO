@@ -1,56 +1,35 @@
-import LegalLayout, { LegalSection } from '../../components/layout/LegalLayout'
+import React from 'react';
 
 export default function Refund() {
   return (
-    <LegalLayout title="Refund Policy" updated="August 14, 2026">
-      <LegalSection title="1. General Policy & Compliance Requirement">
-        <p>
-          Account evaluation fees for Instant and Challenge accounts are one-time service charges. Because access to the proprietary trading environment and broker provisioning is allocated immediately upon transaction submission, fees are <strong>strictly non-refundable</strong> once processed.
-        </p>
-        <p className="mt-2 text-paper-300">
-          <strong>Non-Compliance Clause:</strong> We <strong>do not provide refunds</strong> if a user fails to adhere to our Privacy Agreement, Terms of Service, or Account Registration guidelines.
-        </p>
-      </LegalSection>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-8">
+      <div className="space-y-2 border-b border-slate-800 pb-6">
+        <h1 className="text-3xl font-extrabold text-white">Refund & Fee Return Policy</h1>
+        <p className="text-xs text-slate-400 font-mono">100% Evaluation Fee Refund On First Payout</p>
+      </div>
 
-      <LegalSection title="2. Eligible Refund Cases">
-        <p>
-          A refund review may only be considered under the following limited conditions:
-        </p>
-        <ul className="mt-2 list-disc pl-5 space-y-1 text-paper-300">
-          <li>The account credentials were never delivered due to an unresolved technical processing error on our server.</li>
-          <li>You were inadvertently charged multiple times for the exact same order transaction.</li>
-          <li>You submitted a formal cancellation request via support within 24 hours of payment before any trading login or market activity occurred on the evaluation account.</li>
-        </ul>
-      </LegalSection>
+      <div className="space-y-6 text-slate-300 text-xs sm:text-sm leading-relaxed">
+        <section className="space-y-2">
+          <h2 className="text-lg font-bold text-white">1. 100% Refundable Evaluation Fee</h2>
+          <p>
+            When a trader successfully passes their challenge phase and reaches their first profit withdrawal on the funded account stage, 100% of their initial evaluation purchase fee is reimbursed directly alongside their profit split.
+          </p>
+        </section>
 
-      <LegalSection title="3. Strictly Non-Refundable Situations">
-        <p>
-          Refunds are <strong>strictly denied</strong> under the following circumstances:
-        </p>
-        <ul className="mt-2 list-disc pl-5 space-y-2 text-paper-300">
-          <li>
-            <strong>Privacy Agreement & Email Policy Breaches:</strong> Use of prohibited, deceptive, fake, or brand-impersonating email addresses (e.g. emails containing <code>qxtfunded</code>, <code>fundedaccount</code>, or <code>quotexfunded</code>) or falsified identification.
-          </li>
-          <li>
-            <strong>Trading Rule Violations:</strong> Accounts terminated or disqualified due to maximum drawdown breaches, daily loss limit violations, coordinated arbitrage, latency abuse, or sharing account credentials.
-          </li>
-          <li>
-            <strong>Active Evaluation Accounts:</strong> Accounts where trading positions or demo market executions have already been placed.
-          </li>
-        </ul>
-      </LegalSection>
+        <section className="space-y-2">
+          <h2 className="text-lg font-bold text-white">2. Pre-Trading Cancellations</h2>
+          <p>
+            If credentials have not yet been generated and no trading activity has occurred, candidates may request a cancellation within 14 calendar days of purchase by contacting the priority desk.
+          </p>
+        </section>
 
-      <LegalSection title="4. How to Request a Refund Review">
-        <p>
-          To request a review for an eligible processing discrepancy, open a Billing support ticket from your QXT dashboard within the applicable 24-hour window, citing your Order Number and transaction hash. Our compliance department reviews requests within 2 business days.
-        </p>
-      </LegalSection>
-
-      <LegalSection title="5. Processing Time">
-        <p>
-          Approved discrepancy refunds are returned via the original payment method. Cryptocurrency settlements are completed within 3 to 5 business days.
-        </p>
-      </LegalSection>
-    </LegalLayout>
-  )
+        <section className="space-y-2">
+          <h2 className="text-lg font-bold text-white">3. Rule Breaches</h2>
+          <p>
+            Once trading commences and an account breaches drawdown limits, the evaluation fee is non-refundable, as computational server capacity and simulated feeds were consumed.
+          </p>
+        </section>
+      </div>
+    </div>
+  );
 }

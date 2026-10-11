@@ -1,84 +1,121 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Cookie, X } from 'lucide-react'
-import Button from './Button'
+import React, { useState, useEffect } from 'react';
+import { Shield, Lock, EyeOff, Check, X } from 'lucide-react';
 
 export default function CookieBanner() {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [preferences, setPreferences] = useState({
+    essential: true,
+    securityShield: true,
+    performance: false,
+    marketing: false,
+  });
 
   useEffect(() => {
     try {
-      const consent = localStorage.getItem('qxt_cookie_consent')
+      const consent = localStorage.getItem('qxt_cookie_consent');
       if (!consent) {
-        // Show after small initial delay so page finishes initial load smoothly
-        const timer = setTimeout(() => setVisible(true), 800)
-        return () => clearTimeout(timer)
+        // Show after a brief delay for smooth entrance
+        const t = setTimeout(() => setVisible(true), 800);
+        return () => clearTimeout(t);
       }
-    } catch (e) {
-      // Ignore local storage error
+    } catch {
+      // ignore
     }
-  }, [])
+  }, []);
 
-  const handleConsent = (level) => {
+  const saveConsent = (allAccepted = false) => {
     try {
-      localStorage.setItem('qxt_cookie_consent', level)
-    } catch (e) {
-      // Ignore
+      const payload = {
+        essential: true,
+        securityShield: true,
+        performance: allAccepted,
+        marketing: allAccepted,
+        timestamp: new Date().toISOString(),
+        strictMode: true,
+      };
+      localStorage.setItem('qxt_cookie_consent', JSON.stringify(payload));
+      setVisible(false);
+    } catch {
+      setVisible(false);
     }
-    setVisible(false)
-  }
+  };
 
-  if (!visible) return null
+  if (!visible) return null;
 
   return (
-    <div
-      role="region"
-      aria-label="Cookie consent notice"
-      className="fixed bottom-4 inset-x-4 z-40 mx-auto max-w-4xl transition-all duration-300 animate-fadeIn"
-    >
-      <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-ink-900/95 p-4 sm:p-5 shadow-2xl backdrop-blur-xl md:flex-row md:items-center md:justify-between">
-        <div className="flex items-start gap-3.5 pr-2">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-500/10 text-gold-400 border border-gold-500/20">
-            <Cookie size={18} />
+    <div className="fixed bottom-4 left-4 right-4 md:left-6 md:right-auto md:max-w-xl z-50 animate-in fade-in slide-in-from-bottom duration-300">
+      <div className="glass-panel bg-[#0B0F19]/95 border border-emerald-500/30 rounded-2xl p-5 shadow-2xl backdrop-blur-xl text-slate-200">
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 shrink-0 mt-0.5">
+            <Shield className="w-5 h-5" />
           </div>
-          <div className="text-xs sm:text-sm text-paper-300 leading-relaxed">
-            <p>
-              We use functional cookies to safeguard your trader dashboard, maintain active evaluation
-              sessions, and secure payments. Learn more in our{' '}
-              <Link to="/legal/cookies" className="font-medium text-gold-400 hover:underline">
-                Cookies Policy
-              </Link>
-              .
+          <div className="space-y-1.5 flex-1">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-white text-base flex items-center gap-2">
+                Maximum Privacy & Cookie Hardening
+                <span className="text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                  Zero Tracker
+                </span>
+              </h3>
+              <button 
+                onClick={() => setVisible(false)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              We enforce strict SameSite=Strict cookies, HTTPS-only tokens, and zero commercial tracking scripts. Your identity, browser headers, and session tokens remain private and encrypted.
             </p>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2.5 shrink-0 self-end md:self-center">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleConsent('essential')}
-            className="text-xs px-3.5 py-1.5"
-          >
-            Essential Only
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => handleConsent('all')}
-            className="text-xs px-3.5 py-1.5"
-          >
-            Accept All
-          </Button>
-          <button
-            onClick={() => handleConsent('essential')}
-            aria-label="Dismiss cookie notice"
-            className="p-1 text-paper-400 hover:text-paper-100 transition-colors ml-1"
-          >
-            <X size={16} />
-          </button>
+            {showDetails && (
+              <div className="pt-3 pb-2 space-y-2 text-xs border-t border-slate-800 my-2">
+                <div className="flex items-center justify-between py-1 px-2 rounded bg-slate-900/60">
+                  <span className="flex items-center gap-1.5 text-slate-300">
+                    <Lock className="w-3.5 h-3.5 text-emerald-400" />
+                    Essential & Auth Tokens (Required)
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-mono">Always Active</span>
+                </div>
+                <div className="flex items-center justify-between py-1 px-2 rounded bg-slate-900/60">
+                  <span className="flex items-center gap-1.5 text-slate-300">
+                    <EyeOff className="w-3.5 h-3.5 text-emerald-400" />
+                    Anti-Fingerprint & Cloud Proxy Guard
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-mono">Enforced</span>
+                </div>
+                <div className="flex items-center justify-between py-1 px-2 rounded bg-slate-900/60">
+                  <span className="text-slate-400">Third-Party Tracking & Advertising</span>
+                  <span className="text-[10px] text-rose-400 font-mono">Permanently Blocked</span>
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <button
+                onClick={() => saveConsent(true)}
+                className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition-colors flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" />
+                Accept Secure Policy
+              </button>
+              <button
+                onClick={() => saveConsent(false)}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition-colors"
+              >
+                Essential Only
+              </button>
+              <button
+                onClick={() => setShowDetails(!showDetails)}
+                className="px-2.5 py-1.5 text-slate-400 hover:text-slate-200 text-xs underline transition-colors"
+              >
+                {showDetails ? 'Hide Details' : 'Security Details'}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,7 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /dashboard/
-Disallow: /checkout/
-Disallow: /verify-email
-
-Sitemap: https://qxtfunded.org/sitemap.xml
+Disallow: /checkout/step3

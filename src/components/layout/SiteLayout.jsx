@@ -1,23 +1,21 @@
-import { Outlet } from 'react-router-dom'
-import Navbar from './Navbar'
-import Footer from './Footer'
-import ScrollToTop from './ScrollToTop'
-import LiveChatFloatingButton from '../ui/LiveChatFloatingButton'
-import CookieBanner from '../ui/CookieBanner'
-import StickyMobileCTA from '../ui/StickyMobileCTA'
+import React from 'react';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import CookieBanner from '../ui/CookieBanner';
+import LiveChatFloatingButton from '../ui/LiveChatFloatingButton';
+import ScrollToTop from './ScrollToTop';
 
-export default function SiteLayout() {
+export default function SiteLayout({ children }) {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-ink-950 text-paper-50">
+    <div className="min-h-screen flex flex-col bg-[#070A12] text-slate-100 selection:bg-emerald-500 selection:text-black">
       <ScrollToTop />
       <Navbar />
-      <main className="flex-1">
-        <Outlet />
+      <main className="flex-1 w-full">
+        {children}
       </main>
       <Footer />
-      <StickyMobileCTA />
       <CookieBanner />
       <LiveChatFloatingButton />
     </div>
-  )
+  );
 }

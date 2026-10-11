@@ -1,117 +1,172 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Plus, LifeBuoy, ChevronRight, MessageSquareCode } from 'lucide-react'
-import { Card, Badge } from '../../components/ui/Primitives'
-import Button from '../../components/ui/Button'
-import { useAuth } from '../../lib/AuthContext'
-import { subscribeUserTickets } from '../../lib/firestore'
-import { openLiveChat } from '../../lib/livechat'
-
-const ticketStatusMeta = {
-  Open: { label: 'Open', tone: 'gold' },
-  open: { label: 'Open', tone: 'gold' },
-  'Waiting Reply': { label: 'Waiting Reply', tone: 'warning' },
-  waiting_reply: { label: 'Waiting Reply', tone: 'warning' },
-  Answered: { label: 'Answered', tone: 'mint' },
-  answered: { label: 'Answered', tone: 'mint' },
-  Closed: { label: 'Closed', tone: 'neutral' },
-  closed: { label: 'Closed', tone: 'neutral' },
-}
+import React, { useState } from 'react';
+import { HelpCircle, Plus, Send, CheckCircle2, MessageSquare, Clock } from 'lucide-react';
 
 export default function SupportList() {
-  const { user } = useAuth()
-  const [tickets, setTickets] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [tickets, setTickets] = useState([
+    {
+      id: 'TCK-88192',
+      subject: 'Deposit Confirmation Verification',
+      department: 'Billing & Crypto',
+      status: 'Resolved',
+      date: '2026-10-09',
+      lastReply: 'Credentials generated successfully and sent to your portal.'
+    },
+    {
+      id: 'TCK-89041',
+      subject: 'Quotex Server Connection Query',
+      department: 'Technical & Terminal',
+      status: 'Open',
+      date: '2026-10-11',
+      lastReply: 'Desk agent reviewing latency sync on European cluster.'
+    }
+  ]);
 
-  useEffect(() => {
-    if (!user?.uid) return
-    const unsubscribe = subscribeUserTickets(user.uid, (data) => {
-      setTickets(data)
-      setLoading(false)
-    })
-    return () => unsubscribe()
-  }, [user?.uid])
+  const [newModalOpen, setNewModalOpen] = useState(false);
+  const [subject, setSubject] = useState('');
+  const [department, setDepartment] = useState('Billing & Crypto');
+  const [message, setMessage] = useState('');
+
+  const handleCreate = (e) => {
+    e.preventDefault();
+    if (!subject.trim() || !message.trim()) return;
+
+    const newTicket = {
+      id: `TCK-${Math.floor(10000 + Math.random() * 90000)}`,
+      subject,
+      department,
+      status: 'Open',
+      date: new Date().toISOString().split('T')[0],
+      lastReply: 'Ticket submitted. A support specialist will respond shortly.'
+    };
+
+    setTickets([newTicket, ...tickets]);
+    setSubject('');
+    setMessage('');
+    setNewModalOpen(false);
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="max-w-4xl mx-auto space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold">Support Center</h1>
-          <p className="mt-1 text-sm text-paper-400">Get help from our team, 24/7.</p>
+          <h1 className="text-2xl font-extrabold text-white flex items-center gap-2">
+            <HelpCircle className="w-6 h-6 text-emerald-400" />
+            Support & Risk Desk Tickets
+          </h1>
+          <p className="text-xs text-slate-400 mt-1">
+            24/7 Priority trader support desk for account issues, broker connections, and billing.
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button onClick={openLiveChat} variant="primary">
-            <MessageSquareCode size={16} /> Live Chat
-          </Button>
-          <Button to="/dashboard/support/new" variant="outline">
-            <Plus size={16} /> New Ticket
-          </Button>
-        </div>
+
+        <button
+          onClick={() => setNewModalOpen(true)}
+          className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-500/20"
+        >
+          <Plus className="w-4 h-4" />
+          Create New Ticket
+        </button>
       </div>
 
-      <Card className="relative overflow-hidden border-gold-500/30 bg-gradient-to-r from-gold-500/10 via-ink-900 to-ink-900 p-5" hover={false}>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold-500/20 text-gold-400">
-              <MessageSquareCode size={24} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="font-display font-semibold text-paper-100">Need Instant Help?</h2>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-mint-500/10 px-2.5 py-0.5 text-xs font-medium text-mint-400 border border-mint-500/20">
-                  <span className="h-1.5 w-1.5 rounded-full bg-mint-400 animate-pulse" />
-                  Live Chat Online
-                </span>
+      {/* Ticket List */}
+      <div className="glass-panel rounded-3xl border border-slate-800 overflow-hidden divide-y divide-slate-800">
+        {tickets.map((t) => (
+          <div key={t.id} className="p-6 hover:bg-slate-900/40 transition-colors space-y-3">
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs text-slate-400">{t.id}</span>
+                  <span className="text-[10px] font-mono uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+                    {t.department}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold text-white mt-1">{t.subject}</h3>
               </div>
-              <p className="mt-0.5 text-sm text-paper-400">Our live chat support team is available right now to assist you with accounts and billing.</p>
+
+              <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold ${
+                t.status === 'Resolved'
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+              }`}>
+                {t.status}
+              </span>
             </div>
+
+            <p className="text-xs text-slate-400 leading-relaxed bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+              {t.lastReply}
+            </p>
+
+            <span className="text-[11px] text-slate-500 block font-mono">Submitted: {t.date}</span>
           </div>
-          <Button onClick={openLiveChat} variant="primary" className="shrink-0">
-            Start Live Chat
-          </Button>
-        </div>
-      </Card>
+        ))}
+      </div>
 
-      {loading ? (
-        <Card hover={false} className="py-12 text-center text-sm text-paper-400">
-          Loading support tickets…
-        </Card>
-      ) : tickets.length === 0 ? (
-        <Card hover={false} className="flex flex-col items-center gap-3 py-16 text-center">
-          <LifeBuoy size={32} className="text-paper-600" />
-          <p className="font-medium text-paper-200">No support tickets yet</p>
-          <p className="text-sm text-paper-500">Need help? Start a live chat session or open a ticket above.</p>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {tickets.map((t) => {
-            const meta = ticketStatusMeta[t.status] || { label: t.status, tone: 'gold' }
-            const dateStr = t.updatedAt || t.createdAt
-              ? new Date(t.updatedAt || t.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-              : t.updated || 'Recently'
+      {/* Modal */}
+      {newModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="glass-panel w-full max-w-lg bg-[#0B0F19] p-6 rounded-3xl border border-slate-800 space-y-5 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="font-bold text-white text-base">Open Support Ticket</h3>
+              <button onClick={() => setNewModalOpen(false)} className="text-slate-400 hover:text-white text-xs">
+                Close
+              </button>
+            </div>
 
-            return (
-              <Link key={t.id} to={`/dashboard/support/${t.id}`}>
-                <Card className="flex items-center justify-between gap-4 p-5">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="num text-xs text-paper-500">{t.id || t.ticketNumber}</span>
-                      <Badge tone="neutral" className="text-[10px]">{t.category}</Badge>
-                      {t.priority === 'High' && <Badge tone="error" className="text-[10px]">High</Badge>}
-                    </div>
-                    <p className="mt-1.5 truncate font-medium text-paper-100">{t.subject}</p>
-                    <p className="mt-1 text-xs text-paper-500">Updated {dateStr}</p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <Badge tone={meta.tone}>{meta.label}</Badge>
-                    <ChevronRight size={16} className="text-paper-500" />
-                  </div>
-                </Card>
-              </Link>
-            )
-          })}
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Department</label>
+                <select
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                >
+                  <option value="Billing & Crypto">Billing & Crypto Deposits</option>
+                  <option value="Technical & Terminal">Technical & Broker Terminal</option>
+                  <option value="Risk & Rules">Risk Management & Evaluation Rules</option>
+                  <option value="Payout & Withdrawals">Payouts & Withdrawals</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Subject</label>
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Summary of your issue..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Message Description</label>
+                <textarea
+                  rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Provide transaction details, broker order ID, or question..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setNewModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs"
+                >
+                  Submit Ticket
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
-  )
+  );
 }

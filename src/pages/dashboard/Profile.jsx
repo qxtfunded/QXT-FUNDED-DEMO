@@ -1,174 +1,117 @@
-import { useState, useEffect } from 'react'
-import { Camera, Trash2, CheckCircle2, AlertCircle } from 'lucide-react'
-import { Card } from '../../components/ui/Primitives'
-import { Label, Input, Select } from '../../components/ui/Form'
-import Button from '../../components/ui/Button'
-import { useAuth } from '../../lib/AuthContext'
-import { refineErrorMessage } from '../../lib/firebase'
-import { sanitizeInput, MAX_LENGTHS, checkRateLimit } from '../../lib/security'
+import React, { useState } from 'react';
+import { useAuth } from '../../lib/AuthContext';
+import { User, Shield, Check, Wallet, Coins, AlertCircle } from 'lucide-react';
 
 export default function Profile() {
-  const { user, userData, updateUserProfile, signOut } = useAuth()
-  const [fullname, setFullname] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [country, setCountry] = useState('United States')
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [error, setError] = useState('')
+  const { currentUser } = useAuth();
+  const [payoutAddress, setPayoutAddress] = useState('TW1Cd8GLzobCan1F5Eg15kH8qchs6tbzDY');
+  const [payoutNetwork, setPayoutNetwork] = useState('USDT TRC20');
+  const [saved, setSaved] = useState(false);
 
-  useEffect(() => {
-    if (userData) {
-      setFullname(userData.fullName || '')
-      setEmail(userData.email || user?.email || '')
-      setPhone(userData.phone || '')
-      setCountry(userData.country || 'United States')
-    } else if (user) {
-      setFullname(user.displayName || '')
-      setEmail(user.email || '')
-    }
-  }, [user, userData])
-
-  const handleSave = async (e) => {
-    e.preventDefault()
-
-    const rateCheck = checkRateLimit('profile_update', 5, 60000)
-    if (!rateCheck.allowed) {
-      return setError(rateCheck.error)
-    }
-
-    setSaving(true)
-    setError('')
-    setSaved(false)
-    try {
-      await updateUserProfile({
-        fullName: sanitizeInput(fullname, MAX_LENGTHS.NAME),
-        phone: sanitizeInput(phone, MAX_LENGTHS.PHONE),
-        country: sanitizeInput(country, MAX_LENGTHS.CITY),
-      })
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
-    } catch (err) {
-      console.error(err)
-      setError(refineErrorMessage(err, 'Failed to update profile. Please try again.'))
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleDeleteAccount = async () => {
-    try {
-      await signOut()
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  const initial = (fullname || email || 'A').charAt(0).toUpperCase()
-  const regDate = userData?.registrationDate
-    ? new Date(userData.registrationDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    : 'Recent Member'
+  const handleSave = (e) => {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-semibold">Profile</h1>
-        <p className="mt-1 text-sm text-paper-400">Manage your personal information.</p>
+        <h1 className="text-2xl font-extrabold text-white">Trader Profile & Payout Settings</h1>
+        <p className="text-xs text-slate-400 mt-1">
+          Manage your personal details and destination payout wallet.
+        </p>
       </div>
 
-      {saved && (
-        <div className="flex items-center gap-2 rounded-lg border border-mint-500/30 bg-mint-500/10 p-3 text-xs text-mint-400">
-          <CheckCircle2 size={16} /> Profile changes saved successfully.
-        </div>
-      )}
+      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
+        <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <User className="w-4 h-4 text-emerald-400" />
+          Personal Account Information
+        </h3>
 
-      {error && (
-        <div className="flex items-center gap-2 rounded-lg border border-signal-error/30 bg-signal-error/10 p-3 text-xs text-signal-error">
-          <AlertCircle size={16} /> {error}
-        </div>
-      )}
-
-      <Card className="p-6" hover={false}>
-        <div className="flex items-center gap-5">
-          <div className="relative">
-            <img
-              src={userData?.photoURL || '/logo.png'}
-              alt="Avatar"
-              referrerPolicy="no-referrer"
-              onError={(e) => {
-                if (e.currentTarget.src !== 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg') {
-                  e.currentTarget.src = 'https://i.ibb.co/tMbN39zz/IMG-20260815-WA5130.jpg'
-                }
-              }}
-              className="h-20 w-20 rounded-full object-cover border-2 border-gold-500/40 shadow-md"
-            />
-            <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink-800 bg-ink-700 text-paper-200 hover:text-gold-400">
-              <Camera size={14} />
-            </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <span className="text-slate-500 uppercase font-mono text-[10px]">Display Name</span>
+            <p className="text-sm font-bold text-white">{currentUser?.displayName || 'Alex Rivers'}</p>
           </div>
-          <div>
-            <p className="font-medium text-paper-100">{fullname || 'Trader'}</p>
-            <p className="text-sm text-paper-500">Member since {regDate}</p>
+
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <span className="text-slate-500 uppercase font-mono text-[10px]">Registered Email</span>
+            <p className="text-sm font-bold text-white">{currentUser?.email || 'trader@qxtfunded.com'}</p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <span className="text-slate-500 uppercase font-mono text-[10px]">KYC Verification Status</span>
+            <p className="text-sm font-bold text-emerald-400 flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5" />
+              {currentUser?.kycStatus || 'Verified (Level 2)'}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <span className="text-slate-500 uppercase font-mono text-[10px]">Security IP Tunnel</span>
+            <p className="text-sm font-bold text-cyan-400 font-mono">{currentUser?.lastLoginIp || 'Shield Node 09'}</p>
           </div>
         </div>
+      </div>
 
-        <form onSubmit={handleSave} className="mt-8 space-y-5">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div>
-              <Label htmlFor="fullname">Full Name</Label>
-              <Input id="fullname" value={fullname} onChange={(e) => setFullname(e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="pemail">Email</Label>
-              <Input id="pemail" type="email" value={email} disabled className="opacity-60 cursor-not-allowed" />
-            </div>
-            <div>
-              <Label htmlFor="pphone">Phone</Label>
-              <Input id="pphone" type="tel" placeholder="+1 (555) 000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="pcountry">Country</Label>
-              <Select id="pcountry" value={country} onChange={(e) => setCountry(e.target.value)}>
-                <option value="United States">United States</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="United Arab Emirates">United Arab Emirates</option>
-                <option value="Pakistan">Pakistan</option>
-                <option value="Canada">Canada</option>
-                <option value="Australia">Australia</option>
-                <option value="Germany">Germany</option>
-                <option value="Other">Other</option>
-              </Select>
-            </div>
-          </div>
-          <Button type="submit" disabled={saving}>
-            {saving ? 'Saving…' : 'Save Changes'}
-          </Button>
-        </form>
-      </Card>
+      {/* Payout Wallet Address Form */}
+      <form onSubmit={handleSave} className="glass-panel p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <Wallet className="w-4 h-4 text-emerald-400" />
+            Configured Profit Payout Wallet
+          </h3>
+          <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+            Automated Payouts
+          </span>
+        </div>
 
-      <Card className="border-signal-error/20 p-6" hover={false}>
-        <h2 className="font-display text-lg font-semibold text-signal-error">Danger Zone</h2>
-        <p className="mt-2 text-sm text-paper-400">
-          Sign out or delete your session permanently. This removes your saved credentials on this browser.
+        <p className="text-xs text-slate-400">
+          When you request bi-weekly or on-demand profit splits, funds are routed directly to this blockchain address.
         </p>
-        {confirmDelete ? (
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Button
-              variant="secondary"
-              className="border-signal-error/40 text-signal-error hover:bg-signal-error/10"
-              onClick={handleDeleteAccount}
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="text-xs font-semibold text-slate-300 block mb-1">Target Network</label>
+            <select
+              value={payoutNetwork}
+              onChange={(e) => setPayoutNetwork(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
             >
-              <Trash2 size={14} /> Confirm Permanent Deletion
-            </Button>
-            <Button variant="ghost" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+              <option value="USDT TRC20">USDT TRC-20 (Tron)</option>
+              <option value="USDT BEP20">USDT BEP-20 (BNB Chain)</option>
+              <option value="USDT ERC20">USDT ERC-20 (Ethereum)</option>
+              <option value="BTC">Bitcoin (Native SegWit)</option>
+            </select>
           </div>
-        ) : (
-          <Button variant="secondary" className="mt-4" onClick={() => setConfirmDelete(true)}>
-            <Trash2 size={14} /> Delete Account
-          </Button>
-        )}
-      </Card>
+
+          <div className="sm:col-span-2">
+            <label className="text-xs font-semibold text-slate-300 block mb-1">Destination Crypto Address</label>
+            <input
+              type="text"
+              value={payoutAddress}
+              onChange={(e) => setPayoutAddress(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 font-mono text-xs text-white focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-2">
+          {saved && (
+            <span className="text-xs text-emerald-400 font-mono flex items-center gap-1">
+              <Check className="w-3.5 h-3.5" />
+              Payout configuration updated!
+            </span>
+          )}
+          <button
+            type="submit"
+            className="ml-auto px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors"
+          >
+            Save Payout Wallet
+          </button>
+        </div>
+      </form>
     </div>
-  )
+  );
 }

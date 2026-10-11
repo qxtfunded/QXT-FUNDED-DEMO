@@ -1,95 +1,137 @@
-import { LifeBuoy, MessageCircle, Mail, ArrowRight, MessageSquareCode } from 'lucide-react'
-import { Eyebrow, Section, Card } from '../components/ui/Primitives'
-import Button from '../components/ui/Button'
-import { faqs } from '../data/content'
-import { openLiveChat } from '../lib/livechat'
+import React, { useState } from 'react';
+import { HelpCircle, Mail, MessageSquare, Send, CheckCircle2, Shield, Clock } from 'lucide-react';
 
 export default function Support() {
+  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
   return (
-    <div className="pt-24">
-      <Section className="pb-8 text-center">
-        <Eyebrow className="justify-center flex">We're here to help</Eyebrow>
-        <h1 className="mx-auto max-w-2xl font-display text-4xl font-semibold sm:text-5xl">
-          Support Center
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-12">
+      <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
+          <HelpCircle className="w-3.5 h-3.5" />
+          24/7 Prop Firm Assistance
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-white">
+          Trader Support & Priority Desk
         </h1>
-        <p className="mx-auto mt-4 max-w-lg text-paper-400">
-          Search the FAQ, start a live chat session, browse your tickets, or reach out directly — our team responds 24/7.
+        <p className="text-slate-400 text-sm">
+          Have questions regarding evaluation challenge rules, crypto verification, or broker credentials? Our team responds within 15 minutes.
         </p>
-      </Section>
+      </div>
 
-      <Section className="pt-0">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="relative overflow-hidden border-gold-500/30 bg-gradient-to-b from-gold-500/10 to-transparent p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gold-500/20 text-gold-400">
-                <MessageSquareCode size={20} />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="glass-card p-6 rounded-2xl border border-slate-800 space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+            <MessageSquare className="w-5 h-5" />
+          </div>
+          <h4 className="font-bold text-white text-base">Live Chat Widget</h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Instant assistance via the floating button at bottom right. Direct connection to risk officers.
+          </p>
+          <span className="text-[11px] text-emerald-400 font-mono block">Status: Online (24/7)</span>
+        </div>
+
+        <div className="glass-card p-6 rounded-2xl border border-slate-800 space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+            <Mail className="w-5 h-5" />
+          </div>
+          <h4 className="font-bold text-white text-base">Direct Email Desk</h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            For institutional queries or contract questions, email our senior team directly.
+          </p>
+          <span className="text-[11px] text-cyan-400 font-mono block">support@qxtfunded.com</span>
+        </div>
+
+        <div className="glass-card p-6 rounded-2xl border border-slate-800 space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+            <Clock className="w-5 h-5" />
+          </div>
+          <h4 className="font-bold text-white text-base">Crypto Verification</h4>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Automatic confirmation on TRC20, BEP20, and BTC blockchains within standard block cycles.
+          </p>
+          <span className="text-[11px] text-amber-400 font-mono block">Avg. Turnaround: 5-15 mins</span>
+        </div>
+      </div>
+
+      {/* Support form */}
+      <div className="glass-panel p-8 sm:p-10 rounded-3xl border border-slate-800 max-w-2xl mx-auto space-y-6">
+        <h3 className="text-xl font-bold text-white">Send Us a Direct Message</h3>
+
+        {submitted ? (
+          <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-2">
+            <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+            <h4 className="font-bold text-white text-base">Message Dispatched!</h4>
+            <p className="text-xs text-slate-300">
+              Our priority support desk has received your inquiry and will email you back shortly.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Your Name</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Alex Rivers"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                />
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-mint-500/10 px-2.5 py-0.5 text-xs font-medium text-mint-400 border border-mint-500/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-mint-400 animate-pulse" />
-                Online
-              </span>
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="trader@domain.com"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
             </div>
-            <h3 className="mt-5 font-display text-lg font-semibold">Live Chat</h3>
-            <p className="mt-2 text-sm text-paper-400">
-              Connect instantly with our support team in real-time 24/7.
-            </p>
-            <Button onClick={openLiveChat} variant="primary" size="sm" className="mt-5 w-full">
-              Start Live Chat <ArrowRight size={14} />
-            </Button>
-          </Card>
 
-          <Card className="p-6">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gold-500/10 text-gold-400">
-              <LifeBuoy size={20} />
+            <div>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Subject</label>
+              <input
+                type="text"
+                required
+                value={formData.subject}
+                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                placeholder="Question regarding deposit or broker..."
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              />
             </div>
-            <h3 className="mt-5 font-display text-lg font-semibold">Open a Ticket</h3>
-            <p className="mt-2 text-sm text-paper-400">
-              Create a support ticket for account, billing, or technical issues.
-            </p>
-            <Button to="/login" variant="outline" size="sm" className="mt-5 w-full">
-              Sign in to continue <ArrowRight size={14} />
-            </Button>
-          </Card>
 
-          <Card className="p-6">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-mint-500/10 text-mint-400">
-              <MessageCircle size={20} />
+            <div>
+              <label className="text-xs font-semibold text-slate-300 block mb-1">Message</label>
+              <textarea
+                rows={4}
+                required
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                placeholder="Describe your inquiry..."
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500"
+              />
             </div>
-            <h3 className="mt-5 font-display text-lg font-semibold">Browse the FAQ</h3>
-            <p className="mt-2 text-sm text-paper-400">
-              Most questions about accounts, rules, and payouts are answered.
-            </p>
-            <Button to="/faq" variant="outline" size="sm" className="mt-5 w-full">
-              View FAQ <ArrowRight size={14} />
-            </Button>
-          </Card>
 
-          <Card className="p-6">
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/5 text-paper-200">
-              <Mail size={20} />
-            </div>
-            <h3 className="mt-5 font-display text-lg font-semibold">Email Us</h3>
-            <p className="mt-2 text-sm text-paper-400">
-              Reach our support team directly via email anytime.
-            </p>
-            <Button href="mailto:support@qxtfunded.org" variant="outline" size="sm" className="mt-5 w-full">
-              support@qxtfunded.org
-            </Button>
-          </Card>
-        </div>
-      </Section>
-
-      <Section className="pt-0">
-        <h2 className="font-display text-2xl font-semibold">Popular questions</h2>
-        <div className="mt-6 space-y-3">
-          {faqs.slice(0, 3).map((f) => (
-            <Card key={f.q} hover={false} className="p-5">
-              <p className="font-medium text-paper-100">{f.q}</p>
-              <p className="mt-2 text-sm text-paper-400">{f.a}</p>
-            </Card>
-          ))}
-        </div>
-      </Section>
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shadow-lg shadow-emerald-500/20"
+            >
+              Send Priority Inquiry
+            </button>
+          </form>
+        )}
+      </div>
     </div>
-  )
+  );
 }

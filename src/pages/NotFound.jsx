@@ -1,29 +1,29 @@
-import { Compass } from 'lucide-react'
-import Button from '../components/ui/Button'
-import EquityCurve from '../components/sections/EquityCurve'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { HelpCircle, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-radial-glow px-6 text-center">
-      <div className="absolute inset-0 bg-grid-fade bg-grid opacity-30" />
-      <EquityCurve />
-      <div className="relative">
-        <p className="num font-display text-7xl font-bold text-gold-400/90 sm:text-8xl">404</p>
-        <h1 className="mt-4 font-display text-2xl font-semibold sm:text-3xl">
-          This page left the market
-        </h1>
-        <p className="mx-auto mt-3 max-w-sm text-paper-400">
-          The page you're looking for doesn't exist or has moved.
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Button to="/" size="lg">
-            <Compass size={18} /> Back to Home
-          </Button>
-          <Button to="/support" size="lg" variant="secondary">
-            Contact Support
-          </Button>
+    <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
+      <div className="glass-panel max-w-md w-full p-8 rounded-3xl border border-slate-800 text-center space-y-6">
+        <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 mx-auto">
+          <HelpCircle className="w-8 h-8" />
         </div>
+        <div className="space-y-2">
+          <span className="text-xs font-mono uppercase text-emerald-400 font-bold">404 Error</span>
+          <h1 className="text-2xl font-black text-white">Page Not Found</h1>
+          <p className="text-xs text-slate-400">
+            The trading route or evaluation link you requested does not exist or has moved.
+          </p>
+        </div>
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Trading Home
+        </Link>
       </div>
     </div>
-  )
+  );
 }

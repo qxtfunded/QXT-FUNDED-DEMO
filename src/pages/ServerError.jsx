@@ -1,30 +1,37 @@
-import { RefreshCw, AlertTriangle } from 'lucide-react'
-import Button from '../components/ui/Button'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { AlertOctagon, ArrowLeft, RefreshCw } from 'lucide-react';
 
 export default function ServerError() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-radial-glow px-6 text-center">
-      <div className="absolute inset-0 bg-grid-fade bg-grid opacity-30" />
-      <div className="relative">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-signal-error/30 bg-signal-error/10 text-signal-error">
-          <AlertTriangle size={28} />
+    <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
+      <div className="glass-panel max-w-md w-full p-8 rounded-3xl border border-rose-500/30 text-center space-y-6">
+        <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mx-auto">
+          <AlertOctagon className="w-8 h-8" />
         </div>
-        <p className="num mt-6 font-display text-6xl font-bold text-paper-100 sm:text-7xl">500</p>
-        <h1 className="mt-4 font-display text-2xl font-semibold sm:text-3xl">
-          Something broke on our end
-        </h1>
-        <p className="mx-auto mt-3 max-w-sm text-paper-400">
-          Our team has been notified. Try refreshing, or come back in a few minutes.
-        </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Button size="lg" onClick={() => window.location.reload()}>
-            <RefreshCw size={18} /> Try Again
-          </Button>
-          <Button to="/" size="lg" variant="secondary">
-            Back to Home
-          </Button>
+        <div className="space-y-2">
+          <span className="text-xs font-mono uppercase text-rose-400">500 Server Error</span>
+          <h1 className="text-2xl font-black text-white">Temporary Gateway Issue</h1>
+          <p className="text-xs text-slate-400">
+            Our edge proxy encountered a brief interruption. Your account and funds remain completely secure.
+          </p>
+        </div>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={() => window.location.reload()}
+            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs flex items-center gap-2"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            Reload Page
+          </button>
+          <Link
+            to="/"
+            className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs"
+          >
+            Return Home
+          </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

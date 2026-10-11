@@ -1,50 +1,28 @@
-import { useState } from 'react'
-import { MailCheck, CheckCircle } from 'lucide-react'
-import AuthShell from '../../components/layout/AuthShell'
-import Button from '../../components/ui/Button'
-import { useAuth } from '../../lib/AuthContext'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { MailCheck, ArrowRight } from 'lucide-react';
 
 export default function VerifyEmail() {
-  const { resendVerification } = useAuth()
-  const [sent, setSent] = useState(false)
-  const [sending, setSending] = useState(false)
-
-  const handleResend = async () => {
-    setSending(true)
-    try {
-      await resendVerification()
-      setSent(true)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setSending(false)
-    }
-  }
-
   return (
-    <AuthShell title="Verify your email">
-      <div className="flex flex-col items-center gap-5 rounded-xl border border-white/10 bg-ink-800 p-8 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gold-500/10 text-gold-400">
-          <MailCheck size={28} />
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+      <div className="glass-panel w-full max-w-md p-8 rounded-3xl border border-slate-800 text-center space-y-6">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
+          <MailCheck className="w-8 h-8" />
         </div>
-        <p className="text-sm leading-relaxed text-paper-300">
-          We've sent a verification link to your email. Click it to activate your account and
-          access your dashboard.
-        </p>
-
-        {sent && (
-          <div className="flex items-center gap-2 text-xs text-mint-400">
-            <CheckCircle size={14} /> Verification email resent!
-          </div>
-        )}
-
-        <Button variant="secondary" className="w-full" onClick={handleResend} disabled={sending}>
-          {sending ? 'Resending…' : 'Resend Email'}
-        </Button>
-        <Button to="/dashboard" variant="ghost" className="w-full">
-          Continue to Dashboard
-        </Button>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-extrabold text-white">Verify Your Email</h2>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            We sent an email verification link. Please click it to authenticate your trader profile and unlock immediate platform credentials.
+          </p>
+        </div>
+        <Link
+          to="/dashboard"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs"
+        >
+          Proceed to Dashboard
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
-    </AuthShell>
-  )
+    </div>
+  );
 }

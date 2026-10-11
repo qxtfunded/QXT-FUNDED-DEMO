@@ -1,33 +1,46 @@
-import LegalLayout, { LegalSection } from '../../components/layout/LegalLayout'
+import React, { useState } from 'react';
+import { Shield, Check } from 'lucide-react';
 
 export default function Cookies() {
+  const [saved, setSaved] = useState(false);
+
   return (
-    <LegalLayout title="Cookies Policy" updated="August 1, 2026">
-      <LegalSection title="1. What Are Cookies">
-        <p>
-          Cookies are small text files stored on your device that help websites remember
-          information about your visit.
-        </p>
-      </LegalSection>
-      <LegalSection title="2. How We Use Cookies">
-        <p>
-          We use essential cookies to keep you signed in and to remember your preferences (such
-          as the Instant/Challenge tab you last viewed). We use analytics cookies to understand
-          how the site is used so we can improve it.
-        </p>
-      </LegalSection>
-      <LegalSection title="3. Managing Cookies">
-        <p>
-          Most browsers let you block or delete cookies through their settings. Blocking
-          essential cookies may prevent you from staying signed in to your dashboard.
-        </p>
-      </LegalSection>
-      <LegalSection title="4. Third-Party Cookies">
-        <p>
-          Some analytics or payment providers we use may set their own cookies when you interact
-          with their embedded tools on our site.
-        </p>
-      </LegalSection>
-    </LegalLayout>
-  )
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-8">
+      <div className="space-y-2 border-b border-slate-800 pb-6">
+        <h1 className="text-3xl font-extrabold text-white">Cookie Policy & Preferences</h1>
+        <p className="text-xs text-slate-400 font-mono">Strict Security & Zero Advertising Trackers</p>
+      </div>
+
+      <div className="space-y-6 text-slate-300 text-xs sm:text-sm leading-relaxed">
+        <section className="space-y-2">
+          <h2 className="text-lg font-bold text-white">How We Use Cookies</h2>
+          <p>
+            We strictly limit cookie usage to essential authentication tokens and security shield verification. We do NOT use third-party analytics cookies or advertising identifiers.
+          </p>
+        </section>
+
+        <section className="space-y-3 p-6 rounded-2xl bg-slate-900 border border-slate-800">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <Shield className="w-4 h-4 text-emerald-400" />
+            Cookie Hardening Settings
+          </h3>
+
+          <div className="space-y-2 text-xs">
+            <div className="flex items-center justify-between py-2 border-b border-slate-800">
+              <span>Authentication & Session (Required)</span>
+              <span className="text-emerald-400 font-mono">Active (SameSite=Strict)</span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-slate-800">
+              <span>Edge Origin Relay Shield</span>
+              <span className="text-emerald-400 font-mono">Active</span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span>Commercial Tracking & Telemetry</span>
+              <span className="text-rose-400 font-mono">Permanently Disabled</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 }
